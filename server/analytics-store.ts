@@ -11,6 +11,14 @@ const SNAPSHOT_WINDOW_DAYS = 14;
 const RECENT_EVENT_LIMIT = 20;
 const MAX_EVENT_AGE_DAYS = 180;
 const MAX_EVENT_ROWS = 50000;
+const MAX_EVENT_TYPE_LENGTH = 40;
+const MAX_SESSION_ID_LENGTH = 120;
+const MAX_PATH_LENGTH = 200;
+const MAX_LABEL_LENGTH = 160;
+const MAX_METADATA_ENTRIES = 10;
+const MAX_METADATA_KEY_LENGTH = 40;
+const MAX_METADATA_STRING_LENGTH = 160;
+const MAX_METADATA_TOTAL_LENGTH = 1200;
 const SESSION_EVENT_WINDOW_MS = 60 * 1000;
 const SESSION_EVENT_LIMIT = 180;
 const SESSION_FINGERPRINT_LIMIT = 12;
@@ -65,29 +73,108 @@ function getRetentionCutoffIso() {
   return retentionDate.toISOString();
 }
 
-function sanitizeString(value: unknown, maxLength: number) {
-  return String(value ?? '')
-    .trim()
-    .slice(0, maxLength);
+function sanitizeText(value: unknown, maxLength: number) {
+  return typeof value === 'string'
+    ? value.trim().slice(0, maxLength)
+    : '';
+}
+
+function sanitizePath(value: unknown) {
+  const normalizedValue = sanitizeText(value, MAX_PATH_LENGTH);
+
+  if (!normalizedValue) {
+    return '/';
+  }
+
+  return normalizedValue.startsWith('/')
+    ? normalizedValue
+    : `/${normalizedValue.replace(/^\/+/, '')}`;
+}
+
+function sanitizeMetadataValue(value: unknown) {
+  if (typeof value === 'string') {
+    return sanitizeText(value, MAX_METADATA_STRING_LENGTH);
+  }
+
+  if (typeof value === 'number') {
+    return Number.isFinite(value) ? value : null;
+  }
+
+  if (typeof value === 'boolean' || value === null) {
+    return value;
+  }
+
+  return null;
 }
 
 function sanitizeMetadata(
   metadata: AnalyticsEventPayload['metadata'],
 ): AnalyticsEventPayload['metadata'] {
-  if (!metadata || typeof metadata !== 'object') {
+  if (!metadata || typeof metadata !== 'object' || Array.isArray(metadata)) {
     return null;
   }
 
-  const entries = Object.entries(metadata)
-    .slice(0, 10)
-    .map(([key, value]) => [sanitizeString(key, 40), value] as const)
-    .filter(([key]) => Boolean(key));
+  const entries: Array<[string, boolean | number | string | null]> = [];
+  let totalLength = 0;
+
+  for (const [rawKey, rawValue] of Object.entries(metadata).slice(0, MAX_METADATA_ENTRIES)) {
+    const key = sanitizeText(rawKey, MAX_METADATA_KEY_LENGTH);
+
+    if (!key) {
+      continue;
+    }
+
+    const value = sanitizeMetadataValue(rawValue);
+
+    if (
+      value === null
+      && rawValue !== null
+      && (typeof rawValue !== 'string' || sanitizeText(rawValue, MAX_METADATA_STRING_LENGTH) === '')
+    ) {
+      continue;
+    }
+
+    totalLength += key.length + String(value).length;
+
+    if (totalLength > MAX_METADATA_TOTAL_LENGTH) {
+      break;
+    }
+
+    entries.push([key, value]);
+  }
 
   if (entries.length === 0) {
     return null;
   }
 
   return Object.fromEntries(entries);
+}
+
+function normalizeAnalyticsPayload(input: AnalyticsEventPayload | unknown): AnalyticsEventPayload | null {
+  if (!input || typeof input !== 'object' || Array.isArray(input)) {
+    return null;
+  }
+
+  const candidate = input as Partial<AnalyticsEventPayload>;
+  const eventType = sanitizeText(candidate.eventType, MAX_EVENT_TYPE_LENGTH);
+
+  if (!isAnalyticsEventType(eventType)) {
+    return null;
+  }
+
+  const sessionId = sanitizeText(candidate.sessionId, MAX_SESSION_ID_LENGTH);
+
+  if (!sessionId) {
+    return null;
+  }
+
+  return {
+    sessionId,
+    eventType,
+    path: sanitizePath(candidate.path),
+    label: sanitizeText(candidate.label, MAX_LABEL_LENGTH) || null,
+    metadata: sanitizeMetadata(candidate.metadata),
+  };
 }
 
 function isAnalyticsEventType(value: string): value is AnalyticsEventType {
@@ -293,30 +380,15 @@ export function createAnalyticsStore(database: ServerDatabase) {
   pruneStoredEvents();
 
   return {
-    trackEvent(input: AnalyticsEventPayload) {
-      const eventType = sanitizeString(input.eventType, 40);
+    trackEvent(input: AnalyticsEventPayload | unknown) {
+      const payload = normalizeAnalyticsPayload(input);
 
-      if (!isAnalyticsEventType(eventType)) {
-        return;
+      if (!payload) {
+        return false;
       }
-
-      const sessionId = sanitizeString(input.sessionId, 120);
-      const path = sanitizeString(input.path, 200) || '/';
-
-      if (!sessionId) {
-        return;
-      }
-
-      const payload = {
-        sessionId,
-        eventType,
-        path,
-        label: sanitizeString(input.label, 160) || null,
-        metadata: sanitizeMetadata(input.metadata),
-      } satisfies AnalyticsEventPayload;
 
       if (isRateLimited(payload)) {
-        return;
+        return true;
       }
 
       insertEvent.run({
@@ -334,6 +406,8 @@ export function createAnalyticsStore(database: ServerDatabase) {
         pruneStoredEvents();
         writesSincePrune = 0;
       }
+
+      return true;
     },
 
     readSnapshot(days = SNAPSHOT_WINDOW_DAYS): AnalyticsSnapshot {

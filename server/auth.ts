@@ -93,13 +93,24 @@ function createPasswordHashInternal(password: string, salt = crypto.randomBytes(
   return `${PASSWORD_HASH_PREFIX}$${salt}$${derivedKey}`;
 }
 
-function verifyPasswordHash(password: string, storedHash: string) {
+export function isSupportedPasswordHashFormat(storedHash: string) {
   const [algorithm, salt, expectedHash] = storedHash.split('$');
 
-  if (algorithm !== PASSWORD_HASH_PREFIX || !salt || !expectedHash) {
+  return (
+    algorithm === PASSWORD_HASH_PREFIX
+    && /^[0-9a-f]+$/i.test(salt ?? '')
+    && (salt?.length ?? 0) >= 32
+    && /^[0-9a-f]+$/i.test(expectedHash ?? '')
+    && (expectedHash?.length ?? 0) === PASSWORD_KEY_LENGTH * 2
+  );
+}
+
+function verifyPasswordHash(password: string, storedHash: string) {
+  if (!isSupportedPasswordHashFormat(storedHash)) {
     return false;
   }
 
+  const [, salt, expectedHash] = storedHash.split('$');
   const actualHash = crypto.scryptSync(password, salt, PASSWORD_KEY_LENGTH).toString('hex');
   return safeCompare(actualHash, expectedHash);
 }
@@ -125,20 +136,10 @@ export function createPasswordHash(password: string) {
 
 export function verifyAdminPassword(
   inputPassword: string,
-  config: {
-    adminPassword: string;
-    adminPasswordHash: string | null;
-  },
+  adminPasswordHash: string,
 ) {
   const normalizedInput = inputPassword.normalize('NFKC');
-
-  if (config.adminPasswordHash) {
-    return verifyPasswordHash(normalizedInput, config.adminPasswordHash);
-  }
-
-  const fallbackHash = crypto.createHash('sha256').update(normalizedInput).digest('hex');
-  const storedHash = crypto.createHash('sha256').update(config.adminPassword).digest('hex');
-  return safeCompare(fallbackHash, storedHash);
+  return verifyPasswordHash(normalizedInput, adminPasswordHash);
 }
 
 export function createAuthStore(database: ServerDatabase, options: AuthStoreOptions) {

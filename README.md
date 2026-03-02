@@ -4,6 +4,8 @@ This branch is the Vercel-safe static deployment variant of the portfolio.
 
 It keeps the public React/Vite site, the current UI, and the local CMS seed content, but it does not depend on the Express, SQLite, auth, or custom analytics stack at runtime.
 
+The static deployment also ships with explicit response security headers from `vercel.json`.
+
 ## What This Branch Is
 
 - A static personal portfolio build that can be deployed directly to Vercel
@@ -71,6 +73,7 @@ Important values:
 - `VITE_APP_MODE="static"`: default for this branch
 - `VITE_ADMIN_PATH="/admin"`: optional private route alias, even though editing is disabled here
 - `VITE_API_BASE_URL=""`: leave empty for the static deployment
+- `ADMIN_PASSWORD_HASH` and `SESSION_SECRET`: required if you intentionally start the old Express server locally
 
 ## Notes
 

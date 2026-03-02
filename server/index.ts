@@ -1,4 +1,9 @@
-import express, { type NextFunction, type Request, type Response } from 'express';
+import express, {
+  type ErrorRequestHandler,
+  type NextFunction,
+  type Request,
+  type Response,
+} from 'express';
 import path from 'path';
 import { createAnalyticsStore } from './analytics-store';
 import { createAuthStore, verifyAdminPassword, type AdminSession } from './auth';
@@ -39,11 +44,13 @@ const requireAllowedIp = requireAllowedAdminIp(serverConfig.adminAllowedIps);
 app.set('trust proxy', serverConfig.trustProxy);
 app.disable('x-powered-by');
 app.use(applySecurityHeaders);
-app.use(express.json({ limit: '2mb' }));
 app.use('/api/auth', requireAllowedIp);
 app.use('/api/auth', disableSensitiveCaching);
+app.use('/api/auth', express.json({ limit: '16kb' }));
 app.use('/api/admin', requireAllowedIp);
 app.use('/api/admin', disableSensitiveCaching);
+app.use('/api/admin', express.json({ limit: '2mb' }));
+app.use('/api/analytics/track', express.json({ limit: '16kb' }));
 
 function getAttemptKeys(request: Request, username: string) {
   const normalizedUsername = username.trim().toLowerCase() || 'unknown';
@@ -149,7 +156,7 @@ app.post('/api/auth/login', requireSameOrigin, (request, response) => {
 
   const isValidLogin =
     username === serverConfig.adminUsername
-    && verifyAdminPassword(password, serverConfig);
+    && verifyAdminPassword(password, serverConfig.adminPasswordHash);
 
   if (!isValidLogin) {
     for (const key of attemptKeys) {
@@ -212,7 +219,11 @@ app.post('/api/analytics/track', requireSameOrigin, (request, response) => {
     return;
   }
 
-  analyticsStore.trackEvent(event);
+  if (!analyticsStore.trackEvent(event)) {
+    response.status(400).json({ error: 'A valid analytics payload is required.' });
+    return;
+  }
+
   response.status(204).end();
 });
 
@@ -248,6 +259,26 @@ app.put(
     response.json(envelope);
   },
 );
+
+const handleRequestParsingError: ErrorRequestHandler = (error, _request, response, next) => {
+  if (error && typeof error === 'object') {
+    const requestError = error as { type?: string };
+
+    if (requestError.type === 'entity.parse.failed') {
+      response.status(400).json({ error: 'Invalid JSON payload.' });
+      return;
+    }
+
+    if (requestError.type === 'entity.too.large') {
+      response.status(413).json({ error: 'Payload too large.' });
+      return;
+    }
+  }
+
+  next(error);
+};
+
+app.use(handleRequestParsingError);
 
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(distPath));
