@@ -6,6 +6,7 @@ import { serverConfig } from './config';
 import { createDatabaseConnection } from './database';
 import { createContentStore } from './content-store';
 import { createLoginRateLimiter } from './login-rate-limit';
+import { createRequestRateLimiter } from './request-rate-limit';
 import {
   applySecurityHeaders,
   disableSensitiveCaching,
@@ -26,6 +27,10 @@ const loginRateLimiter = createLoginRateLimiter({
   blockMs: serverConfig.loginBlockMs,
   maxAttempts: serverConfig.maxLoginAttempts,
   windowMs: serverConfig.loginWindowMs,
+});
+const analyticsRateLimiter = createRequestRateLimiter({
+  maxRequests: 240,
+  windowMs: 60 * 1000,
 });
 const distPath = path.resolve(process.cwd(), 'dist');
 const requireSameOrigin = requireTrustedOrigin(serverConfig.allowedOrigins);
@@ -184,8 +189,15 @@ app.get('/api/content/public', (_request, response) => {
   response.json(contentStore.readPublicContent());
 });
 
-app.post('/api/analytics/track', (request, response) => {
+app.post('/api/analytics/track', requireSameOrigin, (request, response) => {
   const event = request.body;
+  const rateLimit = analyticsRateLimiter.consume(`analytics:${request.ip}`);
+
+  if (!rateLimit.allowed) {
+    response.setHeader('Retry-After', Math.ceil(rateLimit.retryAfterMs / 1000));
+    response.status(202).end();
+    return;
+  }
 
   if (!event || typeof event !== 'object') {
     response.status(400).json({ error: 'A valid analytics payload is required.' });

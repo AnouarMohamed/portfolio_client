@@ -180,6 +180,12 @@ export interface AnalyticsVisitPoint {
   visitors: number;
 }
 
+export interface AnalyticsActionPoint {
+  date: string;
+  actions: number;
+  inquiries: number;
+}
+
 export interface AnalyticsCountItem {
   label: string;
   value: number;
@@ -201,6 +207,7 @@ export interface AnalyticsSnapshot {
   windowDays: number;
   overview: AnalyticsOverview;
   visitsByDay: AnalyticsVisitPoint[];
+  actionsByDay: AnalyticsActionPoint[];
   topPages: AnalyticsCountItem[];
   actionsByType: AnalyticsEventBreakdownItem[];
   recentEvents: AnalyticsEventRecord[];

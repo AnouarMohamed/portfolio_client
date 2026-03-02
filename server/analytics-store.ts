@@ -1,4 +1,5 @@
 import type {
+  AnalyticsActionPoint,
   AnalyticsEventPayload,
   AnalyticsEventRecord,
   AnalyticsEventType,
@@ -8,6 +9,31 @@ import type { ServerDatabase } from './database';
 
 const SNAPSHOT_WINDOW_DAYS = 14;
 const RECENT_EVENT_LIMIT = 20;
+const MAX_EVENT_AGE_DAYS = 180;
+const MAX_EVENT_ROWS = 50000;
+const SESSION_EVENT_WINDOW_MS = 60 * 1000;
+const SESSION_EVENT_LIMIT = 180;
+const SESSION_FINGERPRINT_LIMIT = 12;
+const DEDUPE_WINDOWS: Record<AnalyticsEventType, number> = {
+  page_view: 3000,
+  cta_click: 1200,
+  project_open: 2000,
+  portfolio_filter: 750,
+  journal_filter: 750,
+  journal_page: 750,
+  journal_post_open: 1500,
+  contact_method_click: 1500,
+  inquiry_submit: 5000,
+  admin_login: 5000,
+  admin_login_failed: 5000,
+  admin_logout: 5000,
+  admin_content_saved: 5000,
+};
+
+interface SessionRateState {
+  fingerprints: Map<string, number[]>;
+  timestamps: number[];
+}
 
 function getDateKey(value: string) {
   return value.slice(0, 10);
@@ -31,6 +57,12 @@ function buildDateSeries(days: number) {
   }
 
   return dates;
+}
+
+function getRetentionCutoffIso() {
+  const retentionDate = new Date();
+  retentionDate.setDate(retentionDate.getDate() - MAX_EVENT_AGE_DAYS);
+  return retentionDate.toISOString();
 }
 
 function sanitizeString(value: unknown, maxLength: number) {
@@ -162,6 +194,103 @@ export function createAnalyticsStore(database: ServerDatabase) {
       ORDER BY created_at DESC
     `,
   );
+  const deleteExpiredEvents = database.prepare<[string]>(
+    'DELETE FROM analytics_events WHERE created_at < ?',
+  );
+  const pruneOverflowEvents = database.prepare<[number]>(
+    `
+      DELETE FROM analytics_events
+      WHERE id IN (
+        SELECT id
+        FROM analytics_events
+        ORDER BY created_at DESC, id DESC
+        LIMIT -1 OFFSET ?
+      )
+    `,
+  );
+  const countEvents = database.prepare<[], { count: number }>(
+    'SELECT COUNT(*) AS count FROM analytics_events',
+  );
+  const sessionRateState = new Map<string, SessionRateState>();
+
+  const pruneSessionRateState = () => {
+    const currentTime = Date.now();
+
+    for (const [sessionId, state] of sessionRateState.entries()) {
+      state.timestamps = state.timestamps.filter(
+        (timestamp) => currentTime - timestamp < SESSION_EVENT_WINDOW_MS,
+      );
+
+      for (const [fingerprint, timestamps] of state.fingerprints.entries()) {
+        const nextTimestamps = timestamps.filter(
+          (timestamp) => currentTime - timestamp < SESSION_EVENT_WINDOW_MS,
+        );
+
+        if (nextTimestamps.length === 0) {
+          state.fingerprints.delete(fingerprint);
+          continue;
+        }
+
+        state.fingerprints.set(fingerprint, nextTimestamps);
+      }
+
+      if (state.timestamps.length === 0 && state.fingerprints.size === 0) {
+        sessionRateState.delete(sessionId);
+      }
+    }
+  };
+
+  const isRateLimited = (payload: AnalyticsEventPayload) => {
+    pruneSessionRateState();
+
+    const currentTime = Date.now();
+    const fingerprint = [
+      payload.eventType,
+      payload.path,
+      payload.label ?? '',
+      JSON.stringify(payload.metadata ?? null),
+    ].join('::');
+    const dedupeWindow = DEDUPE_WINDOWS[payload.eventType] ?? 1000;
+    const state = sessionRateState.get(payload.sessionId) ?? {
+      timestamps: [],
+      fingerprints: new Map<string, number[]>(),
+    };
+    const recentFingerprintHits = state.fingerprints.get(fingerprint) ?? [];
+    const activeFingerprintHits = recentFingerprintHits.filter(
+      (timestamp) => currentTime - timestamp < dedupeWindow,
+    );
+
+    if (state.timestamps.length >= SESSION_EVENT_LIMIT) {
+      sessionRateState.set(payload.sessionId, state);
+      return true;
+    }
+
+    if (activeFingerprintHits.length >= SESSION_FINGERPRINT_LIMIT) {
+      state.timestamps.push(currentTime);
+      state.fingerprints.set(fingerprint, [...recentFingerprintHits, currentTime]);
+      sessionRateState.set(payload.sessionId, state);
+      return true;
+    }
+
+    state.timestamps.push(currentTime);
+    state.fingerprints.set(fingerprint, [...recentFingerprintHits, currentTime]);
+    sessionRateState.set(payload.sessionId, state);
+    return false;
+  };
+
+  let writesSincePrune = 0;
+
+  const pruneStoredEvents = () => {
+    deleteExpiredEvents.run(getRetentionCutoffIso());
+
+    const count = countEvents.get()?.count ?? 0;
+
+    if (count > MAX_EVENT_ROWS) {
+      pruneOverflowEvents.run(MAX_EVENT_ROWS);
+    }
+  };
+
+  pruneStoredEvents();
 
   return {
     trackEvent(input: AnalyticsEventPayload) {
@@ -178,14 +307,33 @@ export function createAnalyticsStore(database: ServerDatabase) {
         return;
       }
 
-      insertEvent.run({
+      const payload = {
         sessionId,
         eventType,
         path,
         label: sanitizeString(input.label, 160) || null,
-        metadata: JSON.stringify(sanitizeMetadata(input.metadata)),
+        metadata: sanitizeMetadata(input.metadata),
+      } satisfies AnalyticsEventPayload;
+
+      if (isRateLimited(payload)) {
+        return;
+      }
+
+      insertEvent.run({
+        sessionId: payload.sessionId,
+        eventType: payload.eventType,
+        path: payload.path,
+        label: payload.label,
+        metadata: JSON.stringify(payload.metadata),
         createdAt: new Date().toISOString(),
       });
+
+      writesSincePrune += 1;
+
+      if (writesSincePrune >= 200) {
+        pruneStoredEvents();
+        writesSincePrune = 0;
+      }
     },
 
     readSnapshot(days = SNAPSHOT_WINDOW_DAYS): AnalyticsSnapshot {
@@ -198,6 +346,9 @@ export function createAnalyticsStore(database: ServerDatabase) {
       const visitDays = buildDateSeries(windowDays);
       const visitMap = new Map(
         visitDays.map((date) => [date, { date, pageViews: 0, visitors: new Set<string>() }]),
+      );
+      const actionMap = new Map<string, AnalyticsActionPoint>(
+        visitDays.map((date) => [date, { date, actions: 0, inquiries: 0 }]),
       );
       const pageCounts = new Map<string, number>();
       const actionCounts = new Map<AnalyticsEventType, number>();
@@ -223,8 +374,18 @@ export function createAnalyticsStore(database: ServerDatabase) {
         totalActions += 1;
         actionCounts.set(record.eventType, (actionCounts.get(record.eventType) ?? 0) + 1);
 
+        const actionPoint = actionMap.get(getDateKey(record.createdAt));
+
+        if (actionPoint) {
+          actionPoint.actions += 1;
+        }
+
         if (record.eventType === 'inquiry_submit') {
           totalInquiries += 1;
+
+          if (actionPoint) {
+            actionPoint.inquiries += 1;
+          }
         }
       }
 
@@ -249,6 +410,11 @@ export function createAnalyticsStore(database: ServerDatabase) {
             pageViews: point?.pageViews ?? 0,
             visitors: point?.visitors.size ?? 0,
           };
+        }),
+        actionsByDay: visitDays.map((date) => actionMap.get(date) ?? {
+          date,
+          actions: 0,
+          inquiries: 0,
         }),
         topPages: Array.from(pageCounts.entries())
           .sort((left, right) => right[1] - left[1])
