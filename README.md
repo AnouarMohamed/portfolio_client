@@ -99,10 +99,10 @@ flowchart LR
   Provider[CmsProvider]
   PublicPages[Public pages]
   AdminPage[Admin page]
-  PublicApi[/api/content/public]
-  AuthApi[/api/auth/session]
-  AdminApi[/api/admin/content]
-  AnalyticsApi[/api/admin/analytics]
+  PublicApi["/api/content/public"]
+  AuthApi["/api/auth/session"]
+  AdminApi["/api/admin/content"]
+  AnalyticsApi["/api/admin/analytics"]
 
   Browser --> Router
   Router --> Provider
@@ -392,7 +392,7 @@ flowchart LR
   Action[User action]
   ClientTrack[trackAnalyticsEvent]
   LocalGuard[Client dedupe window]
-  Api[/api/analytics/track]
+  Api["/api/analytics/track"]
   Origin[Origin check]
   IpLimit[Request rate limiter]
   ServerGuard[Server session dedupe + quotas]
@@ -633,11 +633,11 @@ If you deploy frontend and backend on different origins, the browser still uses 
 ```mermaid
 flowchart TD
   Cms[Stored CMS content]
-  PublicRead[readPublicContent()]
-  AdminRead[readAdminContent()]
+  PublicRead["readPublicContent()"]
+  AdminRead["readAdminContent()"]
   DraftFilter[Remove draft projects and posts]
-  PublicJson[/api/content/public]
-  AdminJson[/api/admin/content]
+  PublicJson["/api/content/public"]
+  AdminJson["/api/admin/content"]
   Visitor[Visitor-facing site]
   Editor[Authenticated admin]
 
