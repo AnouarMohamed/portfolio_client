@@ -9,11 +9,11 @@ export function Footer() {
   } = useCms();
 
   return (
-    <footer className="relative z-10 border-t border-brand-ink/5 bg-brand-paper/80 px-6 py-16 backdrop-blur-sm">
+    <footer className="relative z-10 border-t border-brand-ink/5 bg-brand-paper/80 px-4 py-14 backdrop-blur-sm sm:px-6 sm:py-16">
       <div className="mx-auto max-w-7xl">
-        <div className="mb-12 grid grid-cols-1 gap-12 md:grid-cols-4">
+        <div className="mb-10 grid grid-cols-1 gap-10 md:mb-12 md:grid-cols-4 md:gap-12">
           <div className="col-span-1 md:col-span-2">
-            <h2 className="mb-4 text-3xl font-serif">{site.siteName}</h2>
+            <h2 className="mb-4 text-2xl font-serif sm:text-3xl">{site.siteName}</h2>
             <p className="max-w-md leading-relaxed text-brand-muted">
               {site.footerDescription}
             </p>
@@ -39,7 +39,7 @@ export function Footer() {
 
           <div>
             <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider">Connect</h3>
-            <div className="flex space-x-4">
+            <div className="flex flex-wrap gap-3 sm:gap-4">
               {site.socialLinks.map((link) => {
                 const Icon = ICONS[link.icon];
                 const isExternal = link.href.startsWith('http');
@@ -60,7 +60,7 @@ export function Footer() {
             </div>
             <Link
               to="/contact"
-              className="mt-6 inline-flex rounded-full bg-brand-ink px-5 py-3 text-xs font-bold uppercase tracking-[0.28em] text-white transition-colors hover:bg-brand-accent"
+              className="mt-6 inline-flex w-full justify-center rounded-full bg-brand-ink px-5 py-3 text-xs font-bold uppercase tracking-[0.24em] text-white transition-colors hover:bg-brand-accent sm:w-auto sm:tracking-[0.28em]"
               data-analytics-event="cta_click"
               data-analytics-label="Footer get in touch"
               data-analytics-path="/contact"
@@ -70,9 +70,9 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="flex flex-col items-center justify-between border-t border-brand-ink/5 pt-8 text-sm text-brand-muted md:flex-row">
+        <div className="flex flex-col items-center justify-between gap-3 border-t border-brand-ink/5 pt-8 text-center text-sm text-brand-muted md:flex-row md:gap-0 md:text-left">
           <p>&copy; {year} {site.siteName}. All rights reserved.</p>
-          <p className="mt-4 font-serif italic md:mt-0">{site.footerTagline}</p>
+          <p className="font-serif italic">{site.footerTagline}</p>
         </div>
       </div>
     </footer>

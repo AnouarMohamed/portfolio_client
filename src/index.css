@@ -39,6 +39,12 @@
   select {
     @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent/40 focus-visible:ring-offset-2 focus-visible:ring-offset-brand-cream;
   }
+
+  input,
+  textarea,
+  select {
+    font-size: 16px;
+  }
 }
 
 .grain {
@@ -77,4 +83,10 @@
 
 .mask-radial {
   mask-image: radial-gradient(circle, black, transparent);
+}
+
+@media (max-width: 640px) {
+  .grain {
+    opacity: 0.18;
+  }
 }

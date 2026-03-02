@@ -27,7 +27,7 @@ export function PortfolioCatalog() {
 
   return (
     <>
-      <div className="mb-10 flex flex-wrap gap-3">
+      <div className="-mx-4 mb-8 flex gap-3 overflow-x-auto px-4 pb-1 sm:mx-0 sm:mb-10 sm:flex-wrap sm:overflow-visible sm:px-0">
         {filters.map((filter) => (
           <button
             key={filter}
@@ -45,7 +45,7 @@ export function PortfolioCatalog() {
               });
             }}
             className={cn(
-              'rounded-full border px-5 py-2 text-xs font-semibold uppercase tracking-[0.28em] transition-all',
+              'shrink-0 rounded-full border px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] transition-all sm:px-5 sm:text-xs sm:tracking-[0.28em]',
               activeFilter === filter
                 ? 'border-brand-ink bg-brand-ink text-white'
                 : 'border-brand-ink/10 bg-white/70 text-brand-muted hover:border-brand-accent hover:text-brand-ink'
@@ -56,7 +56,7 @@ export function PortfolioCatalog() {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 gap-10 md:grid-cols-2 xl:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 sm:gap-8 md:grid-cols-2 xl:grid-cols-3 xl:gap-10">
         {visibleProjects.map((project, index) => (
           <ProjectCard key={project.slug} project={project} index={index} />
         ))}

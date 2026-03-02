@@ -4,12 +4,12 @@ import { Layout } from './components/Layout';
 import { ADMIN_PATH } from './config/admin';
 
 const About = lazy(() => import('./pages/About'));
+const AdminUnavailable = lazy(() => import('./pages/AdminUnavailable'));
 const Contact = lazy(() => import('./pages/Contact'));
 const Home = lazy(() => import('./pages/Home'));
 const Journal = lazy(() => import('./pages/Journal'));
 const Portfolio = lazy(() => import('./pages/Portfolio'));
 const ProjectDetail = lazy(() => import('./pages/ProjectDetail'));
-const Admin = lazy(() => import('./pages/Admin'));
 
 function RouteLoader() {
   return (
@@ -35,7 +35,7 @@ export default function App() {
             <Route path="/journal" element={<Journal />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
-            <Route path={ADMIN_PATH} element={<Admin />} />
+            <Route path={ADMIN_PATH} element={<AdminUnavailable />} />
             {ADMIN_PATH !== '/admin' ? (
               <Route path="/admin/*" element={<Navigate to="/" replace />} />
             ) : null}

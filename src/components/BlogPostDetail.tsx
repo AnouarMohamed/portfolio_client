@@ -35,19 +35,19 @@ export function BlogPostDetail({ post, onClose }: BlogPostDetailProps) {
         initial={{ y: 50, opacity: 0, scale: 0.95 }}
         animate={{ y: 0, opacity: 1, scale: 1 }}
         exit={{ y: 50, opacity: 0, scale: 0.95 }}
-        className="relative flex max-h-[90vh] w-full max-w-4xl flex-col overflow-hidden rounded-[32px] bg-brand-cream shadow-2xl"
+        className="relative flex max-h-[92vh] w-full max-w-4xl flex-col overflow-hidden rounded-[28px] bg-brand-cream shadow-2xl sm:max-h-[90vh] sm:rounded-[32px]"
       >
         <button
           type="button"
           onClick={onClose}
-          className="absolute right-6 top-6 z-10 rounded-full bg-white/80 p-2 text-brand-ink backdrop-blur-sm transition-colors hover:bg-white"
+          className="absolute right-4 top-4 z-10 rounded-full bg-white/85 p-2 text-brand-ink backdrop-blur-sm transition-colors hover:bg-white sm:right-6 sm:top-6"
           aria-label="Close article"
         >
           <X size={20} />
         </button>
 
         <div className="overflow-y-auto">
-          <div className="aspect-[21/9] w-full overflow-hidden">
+          <div className="aspect-[5/4] w-full overflow-hidden sm:aspect-[21/9]">
             <img
               src={post.image}
               alt={post.title}
@@ -56,8 +56,8 @@ export function BlogPostDetail({ post, onClose }: BlogPostDetailProps) {
             />
           </div>
 
-          <div className="p-8 md:p-16">
-            <div className="mb-8 flex flex-wrap items-center justify-between gap-6">
+          <div className="p-5 sm:p-8 md:p-16">
+            <div className="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-6">
               <div className="flex flex-wrap items-center gap-6 text-sm font-medium text-brand-muted">
                 <div className="flex items-center gap-2">
                   <Calendar size={16} />
@@ -72,7 +72,7 @@ export function BlogPostDetail({ post, onClose }: BlogPostDetailProps) {
               <PostShareActions shareText={shareText} shareUrl={shareUrl} />
             </div>
 
-            <h1 id={`blog-post-title-${post.id}`} className="mb-10 text-4xl font-serif leading-tight md:text-6xl">
+            <h1 id={`blog-post-title-${post.id}`} className="mb-8 text-3xl font-serif leading-tight sm:text-4xl md:mb-10 md:text-6xl">
               {post.title}
             </h1>
 

@@ -4,6 +4,7 @@ import { useLocation } from 'react-router-dom';
 import { useDeclarativeAnalyticsTracking } from '../analytics/useDeclarativeAnalyticsTracking';
 import { usePageViewTracking } from '../analytics/usePageViewTracking';
 import { isAdminRoutePath } from '../config/admin';
+import { ENABLE_CUSTOM_ANALYTICS } from '../config/runtime';
 import { CustomCursor } from './CustomCursor';
 import { Footer } from './Footer';
 import { Navbar } from './Navbar';
@@ -15,9 +16,10 @@ interface LayoutProps {
 export function Layout({ children }: LayoutProps) {
   const location = useLocation();
   const isAdminRoute = isAdminRoutePath(location.pathname);
+  const analyticsEnabled = ENABLE_CUSTOM_ANALYTICS && !isAdminRoute;
 
-  usePageViewTracking(!isAdminRoute);
-  useDeclarativeAnalyticsTracking(!isAdminRoute);
+  usePageViewTracking(analyticsEnabled);
+  useDeclarativeAnalyticsTracking(analyticsEnabled);
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0 });

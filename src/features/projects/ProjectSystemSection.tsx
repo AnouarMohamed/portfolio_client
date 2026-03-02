@@ -8,16 +8,16 @@ interface ProjectSystemSectionProps {
 
 export function ProjectSystemSection({ project }: ProjectSystemSectionProps) {
   return (
-    <section className="px-6 py-20">
-      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-12 lg:grid-cols-[1.2fr_0.8fr]">
+    <section className="px-4 py-14 sm:px-6 sm:py-20">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-8 sm:gap-12 lg:grid-cols-[1.2fr_0.8fr]">
         <div>
-          <p className="mb-4 text-xs font-semibold uppercase tracking-[0.35em] text-brand-accent">Details</p>
-          <h2 className="mb-6 text-4xl font-serif md:text-5xl">The textures, tools, and small details around the experience.</h2>
-          <p className="max-w-2xl text-lg leading-relaxed text-brand-muted">
+          <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.24em] text-brand-accent sm:text-xs sm:tracking-[0.35em]">Details</p>
+          <h2 className="mb-5 text-3xl font-serif sm:text-4xl md:mb-6 md:text-5xl">The textures, tools, and small details around the experience.</h2>
+          <p className="max-w-2xl text-base leading-relaxed text-brand-muted sm:text-lg">
             {project.summary}
           </p>
 
-          <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div className="mt-8 grid grid-cols-2 gap-3 sm:mt-10 sm:grid-cols-3 sm:gap-4">
             {project.gallery.map((image, index) => (
               <div key={image} className="overflow-hidden rounded-[1.75rem] border border-brand-ink/8">
                 <img
@@ -31,7 +31,7 @@ export function ProjectSystemSection({ project }: ProjectSystemSectionProps) {
           </div>
         </div>
 
-        <aside className="rounded-[2rem] border border-brand-ink/8 bg-white/70 p-8 shadow-xl shadow-brand-ink/5 backdrop-blur-sm">
+        <aside className="rounded-[2rem] border border-brand-ink/8 bg-white/70 p-6 shadow-xl shadow-brand-ink/5 backdrop-blur-sm sm:p-8">
           <div className="mb-8">
             <div className="mb-3 text-xs font-semibold uppercase tracking-[0.35em] text-brand-muted">Themes</div>
             <div className="flex flex-wrap gap-2">
@@ -54,7 +54,7 @@ export function ProjectSystemSection({ project }: ProjectSystemSectionProps) {
 
           <Link
             to={`/contact?project=${encodeURIComponent(project.title)}&service=${encodeURIComponent(project.services[0] ?? 'Say hello')}`}
-            className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-[0.3em] text-brand-ink transition-colors hover:text-brand-accent"
+            className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.22em] text-brand-ink transition-colors hover:text-brand-accent sm:text-sm sm:tracking-[0.3em]"
           >
             Say hello about this
             <ArrowRight size={16} />
