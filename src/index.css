@@ -1,0 +1,80 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Inter:wght@100..900&display=swap');
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  --font-serif: "Cormorant Garamond", serif;
+  --font-sans: "Inter", sans-serif;
+
+  --color-brand-cream: #fdfcf8;
+  --color-brand-paper: #f5f2ed;
+  --color-brand-ink: #1a1a1a;
+  --color-brand-muted: #71717a;
+  --color-brand-accent: #5a5a40;
+  --color-brand-soft-gold: #c5b358;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-brand-cream text-brand-ink font-sans antialiased selection:bg-brand-accent/20;
+    background-image:
+      radial-gradient(circle at top, rgb(197 179 88 / 0.16), transparent 32%),
+      linear-gradient(180deg, #fdfcf8 0%, #f5f2ed 100%);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif tracking-tight;
+  }
+
+  a,
+  button,
+  input,
+  textarea,
+  select {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent/40 focus-visible:ring-offset-2 focus-visible:ring-offset-brand-cream;
+  }
+}
+
+.grain {
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  right: -50%;
+  bottom: -50%;
+  width: 200%;
+  height: 200%;
+  background-image:
+    radial-gradient(circle at 25% 20%, rgb(26 26 26 / 0.05) 0.6px, transparent 0.8px),
+    radial-gradient(circle at 75% 80%, rgb(26 26 26 / 0.03) 0.5px, transparent 0.75px);
+  background-size: 24px 24px, 18px 18px;
+  background-position: 0 0, 12px 12px;
+  mix-blend-mode: multiply;
+  opacity: 0.35;
+  visibility: visible;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.glass {
+  @apply border border-white/20 bg-white/40 backdrop-blur-md;
+}
+
+.markdown-body {
+  @apply prose prose-stone max-w-none;
+  @apply prose-headings:font-serif prose-headings:font-medium;
+  @apply prose-p:text-brand-ink/80 prose-p:leading-relaxed;
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+
+.mask-radial {
+  mask-image: radial-gradient(circle, black, transparent);
+}
