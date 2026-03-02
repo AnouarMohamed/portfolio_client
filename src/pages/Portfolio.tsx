@@ -14,24 +14,24 @@ export default function Portfolio() {
   });
 
   return (
-    <div className="px-6 pb-40 pt-32">
+    <div className="px-4 pb-24 pt-28 sm:px-6 sm:pb-40 sm:pt-32">
       <div className="mx-auto max-w-7xl">
-        <div className="mb-16 max-w-4xl">
+        <div className="mb-12 max-w-4xl sm:mb-16">
           <motion.p
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-5 text-xs font-semibold uppercase tracking-[0.35em] text-brand-accent"
+            className="mb-5 text-[11px] font-semibold uppercase tracking-[0.24em] text-brand-accent sm:text-xs sm:tracking-[0.35em]"
           >
             {pages.portfolio.eyebrow}
           </motion.p>
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-8 text-6xl font-serif leading-[0.95] md:text-8xl"
+            className="mb-6 text-4xl font-serif leading-[0.95] sm:text-5xl md:mb-8 md:text-8xl"
           >
             {pages.portfolio.title}
           </motion.h1>
-          <p className="max-w-3xl text-xl leading-relaxed text-brand-muted">
+          <p className="max-w-3xl text-base leading-relaxed text-brand-muted sm:text-lg md:text-xl">
             {pages.portfolio.description}
           </p>
         </div>

@@ -13,28 +13,28 @@ export default function About() {
   });
 
   return (
-    <div className="px-6 pb-40 pt-32">
+    <div className="px-4 pb-24 pt-28 sm:px-6 sm:pb-40 sm:pt-32">
       <div className="mx-auto max-w-7xl">
-        <div className="grid grid-cols-1 items-center gap-24 lg:grid-cols-[1fr_0.9fr]">
+        <div className="grid grid-cols-1 items-center gap-12 sm:gap-16 lg:grid-cols-[1fr_0.9fr] lg:gap-24">
           <div>
             <motion.span
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="mb-6 block text-xs font-bold uppercase tracking-[0.35em] text-brand-accent"
+              className="mb-5 block text-[11px] font-bold uppercase tracking-[0.24em] text-brand-accent sm:mb-6 sm:text-xs sm:tracking-[0.35em]"
             >
               {pages.about.eyebrow}
             </motion.span>
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mb-10 text-6xl font-serif leading-[0.95] md:text-8xl"
+              className="mb-8 text-4xl font-serif leading-[0.95] sm:text-5xl md:mb-10 md:text-8xl"
             >
               {pages.about.titleLeading}
               {' '}
               <span className="italic text-brand-accent">{pages.about.titleHighlight}</span>
               {pages.about.titleTrailing ? ` ${pages.about.titleTrailing}` : ''}
             </motion.h1>
-            <div className="space-y-7 text-lg leading-relaxed text-brand-muted">
+            <div className="space-y-6 text-base leading-relaxed text-brand-muted sm:space-y-7 sm:text-lg">
               {pages.about.paragraphs.map((paragraph) => (
                 <p key={paragraph}>{paragraph}</p>
               ))}
@@ -42,7 +42,7 @@ export default function About() {
 
             <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-3">
               {home.stats.map((stat) => (
-                <article key={stat.id} className="rounded-[1.75rem] border border-brand-ink/8 bg-white/80 p-6 shadow-lg shadow-brand-ink/5">
+                <article key={stat.id} className="rounded-[1.75rem] border border-brand-ink/8 bg-white/80 p-5 shadow-lg shadow-brand-ink/5 sm:p-6">
                   <div className="mb-2 text-3xl font-serif text-brand-accent">{stat.value}</div>
                   <div className="mb-2 text-xs font-semibold uppercase tracking-[0.28em] text-brand-ink">{stat.label}</div>
                   <p className="text-sm leading-relaxed text-brand-muted">{stat.detail}</p>
@@ -55,7 +55,7 @@ export default function About() {
             initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.9 }}
-            className="rounded-[2.5rem] border border-brand-ink/8 bg-white/75 p-8 shadow-2xl shadow-brand-ink/8 backdrop-blur-sm"
+            className="rounded-[2rem] border border-brand-ink/8 bg-white/75 p-5 shadow-2xl shadow-brand-ink/8 backdrop-blur-sm sm:rounded-[2.5rem] sm:p-8"
           >
             <div className="mb-8 overflow-hidden rounded-[2rem]">
               <img

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { motion, useMotionValue, useSpring } from 'motion/react';
 
 export function CustomCursor() {
+  const [isFinePointer, setIsFinePointer] = useState(false);
   const cursorX = useMotionValue(-100);
   const cursorY = useMotionValue(-100);
   const [isHovering, setIsHovering] = useState(false);
@@ -10,6 +11,22 @@ export function CustomCursor() {
   const y = useSpring(cursorY, springConfig);
 
   useEffect(() => {
+    const mediaQuery = window.matchMedia('(pointer: fine)');
+    const updatePointerMode = () => setIsFinePointer(mediaQuery.matches);
+
+    updatePointerMode();
+    mediaQuery.addEventListener('change', updatePointerMode);
+
+    return () => {
+      mediaQuery.removeEventListener('change', updatePointerMode);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isFinePointer) {
+      return;
+    }
+
     const moveCursor = (event: MouseEvent) => {
       cursorX.set(event.clientX - 16);
       cursorY.set(event.clientY - 16);
@@ -33,7 +50,11 @@ export function CustomCursor() {
       window.removeEventListener('mousemove', moveCursor);
       window.removeEventListener('mouseover', handleMouseOver);
     };
-  }, [cursorX, cursorY]);
+  }, [cursorX, cursorY, isFinePointer]);
+
+  if (!isFinePointer) {
+    return null;
+  }
 
   return (
     <motion.div

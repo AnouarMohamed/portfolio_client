@@ -10,11 +10,11 @@ interface BlogPostCardProps {
 export function BlogPostCard({ post }: BlogPostCardProps) {
   return (
     <motion.article
-      className="group relative -m-4 rounded-3xl p-4 transition-all duration-500 hover:bg-white hover:shadow-xl hover:shadow-brand-ink/5"
+      className="group relative rounded-[2rem] p-3 transition-all duration-500 hover:bg-white hover:shadow-xl hover:shadow-brand-ink/5 sm:-m-4 sm:rounded-3xl sm:p-4"
       whileHover={{ y: -8, scale: 1.02 }}
       transition={{ duration: 0.4, ease: [0.215, 0.61, 0.355, 1] }}
     >
-      <div className="relative mb-6 aspect-[16/10] overflow-hidden rounded-2xl">
+      <div className="relative mb-5 aspect-[16/10] overflow-hidden rounded-2xl sm:mb-6">
         <img
           src={post.image}
           alt={post.title}
@@ -32,7 +32,7 @@ export function BlogPostCard({ post }: BlogPostCardProps) {
         <p className="text-xs font-medium uppercase tracking-wider text-brand-muted">
           {format(new Date(post.date), 'MMMM d, yyyy')}
         </p>
-        <h3 className="text-2xl font-serif transition-colors duration-300 group-hover:text-brand-accent">
+        <h3 className="text-xl font-serif transition-colors duration-300 group-hover:text-brand-accent sm:text-2xl">
           {post.title}
         </h3>
         <p className="line-clamp-2 text-sm leading-relaxed text-brand-muted">

@@ -39,7 +39,7 @@ function getInitialFormState(args: {
 }
 
 const fieldClassName =
-  'w-full rounded-2xl border border-brand-paper bg-brand-paper/25 px-5 py-4 transition-colors focus:border-brand-accent';
+  'w-full rounded-2xl border border-brand-paper bg-brand-paper/25 px-4 py-3.5 text-base transition-colors focus:border-brand-accent focus:outline-none sm:px-5 sm:py-4';
 const textFields = [
   ['name', 'Your Name', 'contact-name', 'text', 'Jane Doe', 'name'],
   ['email', 'Email Address', 'contact-email', 'email', 'jane@example.com', 'email'],
@@ -124,8 +124,8 @@ export function InquiryForm({ selectedProject, selectedService }: InquiryFormPro
   };
 
   return (
-    <form className="space-y-8" onSubmit={handleSubmit}>
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+    <form className="space-y-6 sm:space-y-8" onSubmit={handleSubmit}>
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6">
         {textFields.map(([name, label, id, type, placeholder, autoComplete]) => (
           <div key={name} className="space-y-2">
             <label htmlFor={id} className="text-xs font-bold uppercase tracking-widest text-brand-muted">
@@ -146,7 +146,7 @@ export function InquiryForm({ selectedProject, selectedService }: InquiryFormPro
         ))}
       </div>
 
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-3 sm:gap-6">
         {selectFields.map(([name, label, id, optionsKey]) => (
           <div key={name} className="space-y-2">
             <label htmlFor={id} className="text-xs font-bold uppercase tracking-widest text-brand-muted">
@@ -194,7 +194,7 @@ export function InquiryForm({ selectedProject, selectedService }: InquiryFormPro
         </p>
       )}
 
-      <button type="submit" className="w-full rounded-2xl bg-brand-ink py-5 text-xs font-bold uppercase tracking-[0.3em] text-white shadow-lg shadow-brand-ink/20 transition-all hover:-translate-y-0.5 hover:bg-brand-accent">
+      <button type="submit" className="w-full rounded-2xl bg-brand-ink py-4 text-[11px] font-bold uppercase tracking-[0.22em] text-white shadow-lg shadow-brand-ink/20 transition-all hover:-translate-y-0.5 hover:bg-brand-accent sm:py-5 sm:text-xs sm:tracking-[0.3em]">
         <span className="inline-flex items-center gap-2">
           {pages.contact.submitLabel}
           <Send size={16} />

@@ -32,7 +32,7 @@ export default function Journal() {
   } = useJournal();
 
   return (
-    <div className="px-6 pb-40 pt-32">
+    <div className="px-4 pb-24 pt-28 sm:px-6 sm:pb-40 sm:pt-32">
       <div className="mx-auto max-w-7xl">
         <JournalHeader
           activeCategory={activeCategory}
