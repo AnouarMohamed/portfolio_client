@@ -201,17 +201,29 @@ Admin access is available at `/admin`.
 Authentication flow:
 
 1. Admin submits username and password to `/api/auth/login`
-2. Server validates credentials from environment variables
-3. Server issues a signed `httpOnly` session cookie
-4. Authenticated requests can access `/api/admin/content` and `/api/admin/analytics`
+2. Server validates credentials against the configured admin username and password hash
+3. Server creates a revocable server-side session in SQLite
+4. Server issues a hardened `httpOnly` session cookie
+5. Authenticated requests can access `/api/admin/content` and `/api/admin/analytics`
+6. Authenticated write requests must also include a valid CSRF token
 
 Session details:
 
-- cookie name: `aura_admin_session`
-- cookie duration: 7 days
+- cookie name: `aura_admin_session` in development and `__Host-aura_admin_session` in production
+- cookie uses `sameSite=strict`
 - `httpOnly`
-- `sameSite=lax`
 - `secure` in production
+- sessions are revoked on logout
+- sessions enforce an absolute lifetime and an idle timeout
+- sessions are bound to the browser user agent
+- CSRF protection is enforced on authenticated mutations
+
+Login and request hardening:
+
+- repeated failed logins are rate-limited
+- cross-site write requests are rejected by origin checks
+- auth and admin responses are marked `Cache-Control: no-store`
+- the server applies security headers such as `X-Frame-Options`, `X-Content-Type-Options`, HSTS in HTTPS production, and a restrictive baseline CSP for framing/object usage
 
 ## Analytics model
 
@@ -291,8 +303,16 @@ Use the values in [.env.example](.env.example) as the starting point.
 | Variable | Required | Purpose |
 | --- | --- | --- |
 | `ADMIN_USERNAME` | Yes | Username for `/admin` login |
-| `ADMIN_PASSWORD` | Yes | Password for `/admin` login |
-| `SESSION_SECRET` | Yes | Secret used to sign admin session cookies |
+| `ADMIN_PASSWORD` | Dev only | Plaintext fallback password for local development only |
+| `ADMIN_PASSWORD_HASH` | Yes in production | Scrypt password hash for admin login |
+| `SESSION_SECRET` | Yes | Secret used to hash session tokens and bind sessions securely |
+| `APP_ORIGIN` | No | Primary allowed browser origin for authenticated admin writes |
+| `ALLOWED_ORIGINS` | No | Comma-separated extra allowed origins for authenticated admin writes |
+| `ADMIN_LOGIN_WINDOW_MINUTES` | No | Window used for login attempt counting |
+| `ADMIN_LOGIN_BLOCK_MINUTES` | No | Temporary lockout duration after too many failed logins |
+| `ADMIN_LOGIN_MAX_ATTEMPTS` | No | Maximum failed login attempts allowed within the window |
+| `ADMIN_SESSION_DAYS` | No | Absolute admin session lifetime |
+| `ADMIN_SESSION_IDLE_HOURS` | No | Idle timeout before an admin session expires |
 | `CMS_DB_PATH` | No | Path to the SQLite database file |
 | `PORT` | No | Express server port, defaults to `4000` |
 | `VITE_API_BASE_URL` | No | Optional client API base URL, useful when frontend and backend are served from different origins |
@@ -318,11 +338,24 @@ Example values:
 
 ```bash
 ADMIN_USERNAME=client
-ADMIN_PASSWORD=change-me-now
+ADMIN_PASSWORD_HASH=
 SESSION_SECRET=replace-this-with-a-long-random-secret
+APP_ORIGIN=
+ALLOWED_ORIGINS=
+ADMIN_LOGIN_WINDOW_MINUTES=15
+ADMIN_LOGIN_BLOCK_MINUTES=30
+ADMIN_LOGIN_MAX_ATTEMPTS=5
+ADMIN_SESSION_DAYS=7
+ADMIN_SESSION_IDLE_HOURS=12
 CMS_DB_PATH=./data/cms.sqlite
 PORT=4000
 VITE_API_BASE_URL=
+```
+
+Generate a production password hash with:
+
+```bash
+npm run hash:password -- "your-strong-password"
 ```
 
 ### Start development
@@ -358,6 +391,7 @@ Use the credentials from your environment variables.
 | `npm run build` | Build the frontend bundle |
 | `npm run preview` | Preview the production frontend bundle |
 | `npm run start` | Start the Express server |
+| `npm run hash:password -- "password"` | Generate a scrypt password hash for `ADMIN_PASSWORD_HASH` |
 | `npm run typecheck` | Run client and server TypeScript checks |
 | `npm run lint` | Run type-checking and ESLint |
 
@@ -383,7 +417,9 @@ npm run start
 
 - Keep the SQLite database file on persistent storage.
 - Do not deploy with the example admin credentials.
+- Use `ADMIN_PASSWORD_HASH` instead of `ADMIN_PASSWORD`.
 - Set a strong `SESSION_SECRET`.
+- Set `APP_ORIGIN` or `ALLOWED_ORIGINS` if admin writes can originate from another trusted origin.
 - If frontend and backend are on different origins, set `VITE_API_BASE_URL`.
 - Ensure the reverse proxy forwards cookies correctly.
 
