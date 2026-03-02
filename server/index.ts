@@ -53,12 +53,29 @@ function getAttemptKeys(request: Request, username: string) {
   ];
 }
 
-function trackFailedLogin(username: string) {
+function writeRetryAfter(response: Response, retryAfterMs: number) {
+  response.setHeader('Retry-After', Math.ceil(retryAfterMs / 1000));
+}
+
+function respondWithAuthSession(response: Response, session: AdminSession | null) {
+  response.json({
+    authenticated: Boolean(session),
+    username: session?.username,
+    csrfToken: session?.csrfToken,
+  });
+}
+
+function trackAdminEvent(
+  eventType: 'admin_login' | 'admin_login_failed' | 'admin_logout' | 'admin_content_saved',
+  username: string,
+  metadata?: Record<string, number>,
+) {
   analyticsStore.trackEvent({
-    sessionId: `admin-failed:${username || 'unknown'}`,
-    eventType: 'admin_login_failed',
+    sessionId: `${eventType === 'admin_login_failed' ? 'admin-failed' : 'admin'}:${username || 'unknown'}`,
+    eventType,
     path: serverConfig.adminPath,
     label: username || 'unknown',
+    metadata,
   });
 }
 
@@ -66,26 +83,37 @@ function readAdminSession(request: Request) {
   return authStore.readSessionFromRequest(request);
 }
 
-function requireAdmin(request: Request, response: Response, next: NextFunction) {
+function resolveAdminSession(request: Request, response: Response) {
+  const existingSession = response.locals.adminSession as AdminSession | undefined;
+
+  if (existingSession) {
+    return existingSession;
+  }
+
   const session = readAdminSession(request);
 
   if (!session) {
     authStore.clearSessionCookie(response);
     response.status(401).json({ error: 'Authentication required.' });
-    return;
+    return null;
   }
 
   response.locals.adminSession = session;
+  return session;
+}
+
+function requireAdmin(request: Request, response: Response, next: NextFunction) {
+  if (!resolveAdminSession(request, response)) {
+    return;
+  }
+
   next();
 }
 
 function requireAdminCsrf(request: Request, response: Response, next: NextFunction) {
-  const session = (response.locals.adminSession as AdminSession | undefined)
-    ?? readAdminSession(request);
+  const session = resolveAdminSession(request, response);
 
   if (!session) {
-    authStore.clearSessionCookie(response);
-    response.status(401).json({ error: 'Authentication required.' });
     return;
   }
 
@@ -99,13 +127,7 @@ function requireAdminCsrf(request: Request, response: Response, next: NextFuncti
 }
 
 app.get('/api/auth/session', (request, response) => {
-  const session = readAdminSession(request);
-
-  response.json({
-    authenticated: Boolean(session),
-    username: session?.username,
-    csrfToken: session?.csrfToken,
-  });
+  respondWithAuthSession(response, readAdminSession(request));
 });
 
 app.post('/api/auth/login', requireSameOrigin, (request, response) => {
@@ -117,7 +139,7 @@ app.post('/api/auth/login', requireSameOrigin, (request, response) => {
     const status = loginRateLimiter.getStatus(key);
 
     if (status.blocked) {
-      response.setHeader('Retry-After', Math.ceil(status.retryAfterMs / 1000));
+      writeRetryAfter(response, status.retryAfterMs);
       response.status(429).json({
         error: 'Too many login attempts. Please wait before trying again.',
       });
@@ -135,7 +157,7 @@ app.post('/api/auth/login', requireSameOrigin, (request, response) => {
     }
 
     authStore.clearSessionCookie(response);
-    trackFailedLogin(username);
+    trackAdminEvent('admin_login_failed', username);
     response.status(401).json({ error: 'Invalid credentials.' });
     return;
   }
@@ -149,19 +171,10 @@ app.post('/api/auth/login', requireSameOrigin, (request, response) => {
     serverConfig.adminUsername,
   );
 
-  analyticsStore.trackEvent({
-    sessionId: `admin:${serverConfig.adminUsername}`,
-    eventType: 'admin_login',
-    path: serverConfig.adminPath,
-    label: serverConfig.adminUsername,
-  });
+  trackAdminEvent('admin_login', serverConfig.adminUsername);
 
   authStore.setSessionCookie(response, token);
-  response.json({
-    authenticated: true,
-    username: session.username,
-    csrfToken: session.csrfToken,
-  });
+  respondWithAuthSession(response, session);
 });
 
 app.post(
@@ -172,16 +185,11 @@ app.post(
   (request, response) => {
     const session = response.locals.adminSession as AdminSession;
 
-    analyticsStore.trackEvent({
-      sessionId: `admin:${session.username}`,
-      eventType: 'admin_logout',
-      path: serverConfig.adminPath,
-      label: session.username,
-    });
+    trackAdminEvent('admin_logout', session.username);
 
     authStore.destroySession(request);
     authStore.clearSessionCookie(response);
-    response.json({ authenticated: false });
+    respondWithAuthSession(response, null);
   },
 );
 
@@ -194,7 +202,7 @@ app.post('/api/analytics/track', requireSameOrigin, (request, response) => {
   const rateLimit = analyticsRateLimiter.consume(`analytics:${request.ip}`);
 
   if (!rateLimit.allowed) {
-    response.setHeader('Retry-After', Math.ceil(rateLimit.retryAfterMs / 1000));
+    writeRetryAfter(response, rateLimit.retryAfterMs);
     response.status(202).end();
     return;
   }
@@ -232,15 +240,9 @@ app.put(
 
     const envelope = contentStore.writeContent(content);
 
-    analyticsStore.trackEvent({
-      sessionId: `admin:${session.username}`,
-      eventType: 'admin_content_saved',
-      path: serverConfig.adminPath,
-      label: session.username,
-      metadata: {
-        projects: Array.isArray(content.projects) ? content.projects.length : 0,
-        posts: Array.isArray(content.blogPosts) ? content.blogPosts.length : 0,
-      },
+    trackAdminEvent('admin_content_saved', session.username, {
+      projects: Array.isArray(content.projects) ? content.projects.length : 0,
+      posts: Array.isArray(content.blogPosts) ? content.blogPosts.length : 0,
     });
 
     response.json(envelope);

@@ -1,7 +1,8 @@
+import { pruneExpiredTimestamps } from './rate-limit-utils';
+
 interface RateLimitState {
-  attempts: number;
+  attemptTimestamps: number[];
   blockedUntil: number;
-  windowEndsAt: number;
 }
 
 interface LoginRateLimiterOptions {
@@ -10,54 +11,63 @@ interface LoginRateLimiterOptions {
   windowMs: number;
 }
 
+const SWEEP_INTERVAL = 100;
+
 export function createLoginRateLimiter({
   blockMs,
   maxAttempts,
   windowMs,
 }: LoginRateLimiterOptions) {
   const attempts = new Map<string, RateLimitState>();
+  let operationsSinceSweep = 0;
 
-  const pruneExpiredEntries = () => {
-    const currentTime = Date.now();
+  const pruneState = (state: RateLimitState, currentTime: number) => {
+    pruneExpiredTimestamps(state.attemptTimestamps, currentTime - windowMs);
+
+    if (state.blockedUntil <= currentTime) {
+      state.blockedUntil = 0;
+    }
+  };
+
+  const sweep = (currentTime: number) => {
+    operationsSinceSweep = 0;
 
     for (const [key, state] of attempts.entries()) {
-      if (state.blockedUntil <= currentTime && state.windowEndsAt <= currentTime) {
+      pruneState(state, currentTime);
+
+      if (state.blockedUntil === 0 && state.attemptTimestamps.length === 0) {
         attempts.delete(key);
       }
     }
   };
 
-  const readState = (key: string) => {
-    pruneExpiredEntries();
-
-    const currentTime = Date.now();
-    const currentState = attempts.get(key);
-
-    if (!currentState || currentState.windowEndsAt <= currentTime) {
-      const nextState = {
-        attempts: 0,
-        blockedUntil: 0,
-        windowEndsAt: currentTime + windowMs,
-      };
-      attempts.set(key, nextState);
-      return nextState;
-    }
-
+  const readState = (key: string, currentTime: number) => {
+    const currentState = attempts.get(key) ?? {
+      attemptTimestamps: [],
+      blockedUntil: 0,
+    };
+    pruneState(currentState, currentTime);
+    attempts.set(key, currentState);
     return currentState;
   };
 
   return {
     consumeFailure(key: string) {
-      const state = readState(key);
       const currentTime = Date.now();
+      const state = readState(key, currentTime);
 
-      state.attempts += 1;
+      state.attemptTimestamps.push(currentTime);
 
-      if (state.attempts >= maxAttempts) {
+      if (state.attemptTimestamps.length >= maxAttempts) {
         state.blockedUntil = currentTime + blockMs;
       }
 
       attempts.set(key, state);
+      operationsSinceSweep += 1;
+
+      if (operationsSinceSweep >= SWEEP_INTERVAL) {
+        sweep(currentTime);
+      }
 
       return {
         blockedUntil: state.blockedUntil,
@@ -65,8 +75,8 @@ export function createLoginRateLimiter({
       };
     },
     getStatus(key: string) {
-      const state = readState(key);
       const currentTime = Date.now();
+      const state = readState(key, currentTime);
       return {
         blocked: state.blockedUntil > currentTime,
         retryAfterMs: Math.max(0, state.blockedUntil - currentTime),

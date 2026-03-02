@@ -1,25 +1,32 @@
-interface RequestRateState {
-  timestamps: number[];
-}
+import { getWindowRetryAfterMs, pruneExpiredTimestamps } from './rate-limit-utils';
 
 interface RequestRateLimiterOptions {
   maxRequests: number;
   windowMs: number;
 }
 
+interface RequestRateState {
+  timestamps: number[];
+}
+
+const SWEEP_INTERVAL = 250;
+
 export function createRequestRateLimiter({
   maxRequests,
   windowMs,
 }: RequestRateLimiterOptions) {
   const requests = new Map<string, RequestRateState>();
+  let operationsSinceSweep = 0;
 
-  const prune = () => {
-    const currentTime = Date.now();
+  const pruneState = (state: RequestRateState, currentTime: number) => {
+    pruneExpiredTimestamps(state.timestamps, currentTime - windowMs);
+  };
+
+  const sweep = (currentTime: number) => {
+    operationsSinceSweep = 0;
 
     for (const [key, state] of requests.entries()) {
-      state.timestamps = state.timestamps.filter(
-        (timestamp) => currentTime - timestamp < windowMs,
-      );
+      pruneState(state, currentTime);
 
       if (state.timestamps.length === 0) {
         requests.delete(key);
@@ -29,21 +36,22 @@ export function createRequestRateLimiter({
 
   return {
     consume(key: string) {
-      prune();
-
       const currentTime = Date.now();
       const state = requests.get(key) ?? { timestamps: [] };
+      pruneState(state, currentTime);
       state.timestamps.push(currentTime);
       requests.set(key, state);
+      operationsSinceSweep += 1;
 
-      const activeCount = state.timestamps.filter(
-        (timestamp) => currentTime - timestamp < windowMs,
-      ).length;
-      const oldestActiveTimestamp = state.timestamps[0] ?? currentTime;
+      if (operationsSinceSweep >= SWEEP_INTERVAL) {
+        sweep(currentTime);
+      }
+
+      const activeCount = state.timestamps.length;
 
       return {
         allowed: activeCount <= maxRequests,
-        retryAfterMs: Math.max(0, windowMs - (currentTime - oldestActiveTimestamp)),
+        retryAfterMs: getWindowRetryAfterMs(state.timestamps, currentTime, windowMs),
       };
     },
   };
