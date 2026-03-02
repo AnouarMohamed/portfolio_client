@@ -8,6 +8,73 @@ const LOCAL_DEV_ORIGINS = new Set([
 ]);
 const SAFE_FETCH_SITES = new Set(['same-origin', 'same-site', 'none']);
 
+function normalizeIp(value: string) {
+  const normalizedValue = value.trim();
+
+  if (normalizedValue === '::1') {
+    return '127.0.0.1';
+  }
+
+  if (normalizedValue.startsWith('::ffff:')) {
+    return normalizedValue.slice(7);
+  }
+
+  return normalizedValue.split('%')[0];
+}
+
+function isIpv4(value: string) {
+  const segments = value.split('.');
+
+  return (
+    segments.length === 4 &&
+    segments.every((segment) => {
+      if (!/^\d+$/.test(segment)) {
+        return false;
+      }
+
+      const numericSegment = Number(segment);
+      return numericSegment >= 0 && numericSegment <= 255;
+    })
+  );
+}
+
+function ipv4ToNumber(value: string) {
+  return value
+    .split('.')
+    .reduce((result, segment) => (result << 8) + Number(segment), 0) >>> 0;
+}
+
+function matchesIpv4Cidr(ip: string, cidr: string) {
+  const [baseIp, prefixLengthValue] = cidr.split('/');
+  const prefixLength = Number.parseInt(prefixLengthValue ?? '', 10);
+
+  if (!isIpv4(ip) || !isIpv4(baseIp) || prefixLength < 0 || prefixLength > 32) {
+    return false;
+  }
+
+  if (prefixLength === 0) {
+    return true;
+  }
+
+  const mask = (0xffffffff << (32 - prefixLength)) >>> 0;
+  return (ipv4ToNumber(ip) & mask) === (ipv4ToNumber(baseIp) & mask);
+}
+
+function ipMatchesRule(ip: string, rule: string) {
+  const normalizedIp = normalizeIp(ip);
+  const normalizedRule = normalizeIp(rule);
+
+  if (!normalizedRule) {
+    return false;
+  }
+
+  if (normalizedRule.includes('/')) {
+    return matchesIpv4Cidr(normalizedIp, normalizedRule);
+  }
+
+  return normalizedIp === normalizedRule;
+}
+
 function getRequestOrigin(request: Request) {
   const protocol = String(
     request.headers['x-forwarded-proto'] ?? request.protocol ?? 'http',
@@ -106,5 +173,23 @@ export function requireTrustedOrigin(configuredOrigins: string[]) {
     }
 
     next();
+  };
+}
+
+export function requireAllowedAdminIp(configuredIps: string[]) {
+  return (request: Request, response: Response, next: NextFunction) => {
+    if (configuredIps.length === 0) {
+      next();
+      return;
+    }
+
+    const requestIp = normalizeIp(request.ip || request.socket.remoteAddress || '');
+
+    if (configuredIps.some((rule) => ipMatchesRule(requestIp, rule))) {
+      next();
+      return;
+    }
+
+    response.status(403).json({ error: 'Admin access is not allowed from this IP address.' });
   };
 }

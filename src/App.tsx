@@ -1,6 +1,7 @@
 import { Suspense, lazy } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Navigate, Route, Routes } from 'react-router-dom';
 import { Layout } from './components/Layout';
+import { ADMIN_PATH } from './config/admin';
 
 const About = lazy(() => import('./pages/About'));
 const Contact = lazy(() => import('./pages/Contact'));
@@ -34,7 +35,10 @@ export default function App() {
             <Route path="/journal" element={<Journal />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
-            <Route path="/admin" element={<Admin />} />
+            <Route path={ADMIN_PATH} element={<Admin />} />
+            {ADMIN_PATH !== '/admin' ? (
+              <Route path="/admin/*" element={<Navigate to="/" replace />} />
+            ) : null}
           </Routes>
         </Suspense>
       </Layout>

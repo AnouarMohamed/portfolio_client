@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import { useLocation } from 'react-router-dom';
 import { useDeclarativeAnalyticsTracking } from '../analytics/useDeclarativeAnalyticsTracking';
 import { usePageViewTracking } from '../analytics/usePageViewTracking';
+import { isAdminRoutePath } from '../config/admin';
 import { CustomCursor } from './CustomCursor';
 import { Footer } from './Footer';
 import { Navbar } from './Navbar';
@@ -13,7 +14,7 @@ interface LayoutProps {
 
 export function Layout({ children }: LayoutProps) {
   const location = useLocation();
-  const isAdminRoute = location.pathname.startsWith('/admin');
+  const isAdminRoute = isAdminRoutePath(location.pathname);
 
   usePageViewTracking(!isAdminRoute);
   useDeclarativeAnalyticsTracking(!isAdminRoute);

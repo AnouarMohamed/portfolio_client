@@ -15,6 +15,31 @@ function parseList(value: string | undefined) {
     .filter(Boolean);
 }
 
+function parseRoutePath(value: string | undefined, fallback: string) {
+  const normalizedValue = `/${String(value ?? fallback).trim()}`
+    .replace(/\/+/g, '/')
+    .replace(/\/$/, '');
+
+  return normalizedValue === '' ? fallback : normalizedValue;
+}
+
+function parseTrustProxy(value: string | undefined) {
+  const normalizedValue = String(value ?? '').trim().toLowerCase();
+
+  if (!normalizedValue || normalizedValue === 'false') {
+    return false;
+  }
+
+  if (normalizedValue === 'true') {
+    return true;
+  }
+
+  const numericValue = Number.parseInt(normalizedValue, 10);
+  return Number.isFinite(numericValue) && numericValue >= 0
+    ? numericValue
+    : false;
+}
+
 function isWeakSecret(secret: string) {
   return (
     secret.length < 32 ||
@@ -34,6 +59,7 @@ const allowedOrigins = Array.from(
     ...parseList(process.env.ALLOWED_ORIGINS),
   ]),
 );
+const adminPath = parseRoutePath(process.env.VITE_ADMIN_PATH, '/admin');
 
 if (isProduction && !adminPasswordHash) {
   throw new Error('ADMIN_PASSWORD_HASH is required in production.');
@@ -49,13 +75,16 @@ export const serverConfig = {
   adminPassword,
   adminPasswordHash,
   sessionSecret,
+  adminPath,
   dbPath:
     process.env.CMS_DB_PATH ??
     path.resolve(process.cwd(), 'data', 'cms.sqlite'),
   allowedOrigins,
+  adminAllowedIps: parseList(process.env.ADMIN_ALLOWED_IPS),
   loginWindowMs: parseInteger(process.env.ADMIN_LOGIN_WINDOW_MINUTES, 15) * 60 * 1000,
   loginBlockMs: parseInteger(process.env.ADMIN_LOGIN_BLOCK_MINUTES, 30) * 60 * 1000,
   maxLoginAttempts: parseInteger(process.env.ADMIN_LOGIN_MAX_ATTEMPTS, 5),
   sessionAbsoluteTtlMs: parseInteger(process.env.ADMIN_SESSION_DAYS, 7) * 24 * 60 * 60 * 1000,
   sessionIdleTtlMs: parseInteger(process.env.ADMIN_SESSION_IDLE_HOURS, 12) * 60 * 60 * 1000,
+  trustProxy: parseTrustProxy(process.env.TRUST_PROXY),
 };

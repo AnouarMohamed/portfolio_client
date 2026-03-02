@@ -9,6 +9,7 @@ import { createLoginRateLimiter } from './login-rate-limit';
 import {
   applySecurityHeaders,
   disableSensitiveCaching,
+  requireAllowedAdminIp,
   requireTrustedOrigin,
 } from './security';
 
@@ -28,11 +29,15 @@ const loginRateLimiter = createLoginRateLimiter({
 });
 const distPath = path.resolve(process.cwd(), 'dist');
 const requireSameOrigin = requireTrustedOrigin(serverConfig.allowedOrigins);
+const requireAllowedIp = requireAllowedAdminIp(serverConfig.adminAllowedIps);
 
+app.set('trust proxy', serverConfig.trustProxy);
 app.disable('x-powered-by');
 app.use(applySecurityHeaders);
 app.use(express.json({ limit: '2mb' }));
+app.use('/api/auth', requireAllowedIp);
 app.use('/api/auth', disableSensitiveCaching);
+app.use('/api/admin', requireAllowedIp);
 app.use('/api/admin', disableSensitiveCaching);
 
 function getAttemptKeys(request: Request, username: string) {
@@ -47,7 +52,7 @@ function trackFailedLogin(username: string) {
   analyticsStore.trackEvent({
     sessionId: `admin-failed:${username || 'unknown'}`,
     eventType: 'admin_login_failed',
-    path: '/admin',
+    path: serverConfig.adminPath,
     label: username || 'unknown',
   });
 }
@@ -142,7 +147,7 @@ app.post('/api/auth/login', requireSameOrigin, (request, response) => {
   analyticsStore.trackEvent({
     sessionId: `admin:${serverConfig.adminUsername}`,
     eventType: 'admin_login',
-    path: '/admin',
+    path: serverConfig.adminPath,
     label: serverConfig.adminUsername,
   });
 
@@ -165,7 +170,7 @@ app.post(
     analyticsStore.trackEvent({
       sessionId: `admin:${session.username}`,
       eventType: 'admin_logout',
-      path: '/admin',
+      path: serverConfig.adminPath,
       label: session.username,
     });
 
@@ -218,7 +223,7 @@ app.put(
     analyticsStore.trackEvent({
       sessionId: `admin:${session.username}`,
       eventType: 'admin_content_saved',
-      path: '/admin',
+      path: serverConfig.adminPath,
       label: session.username,
       metadata: {
         projects: Array.isArray(content.projects) ? content.projects.length : 0,
