@@ -1,4 +1,5 @@
 import type { AnalyticsEventPayload, AnalyticsEventType } from '../cms/schema';
+import { ENABLE_CUSTOM_ANALYTICS } from '../config/runtime';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL ?? '';
 const SESSION_STORAGE_KEY = 'aura_analytics_session';
@@ -102,7 +103,7 @@ export function trackAnalyticsEvent(args: {
   label?: string | null;
   metadata?: Record<string, boolean | number | string | null> | null;
 }) {
-  if (typeof window === 'undefined') {
+  if (typeof window === 'undefined' || !ENABLE_CUSTOM_ANALYTICS) {
     return;
   }
 

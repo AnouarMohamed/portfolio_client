@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { IS_STATIC_CMS_MODE } from '../config/runtime';
 import { fetchPublicContent } from './api';
 import { CmsContext } from './context';
 import { DEFAULT_CMS_CONTENT } from './defaultContent';
@@ -32,6 +33,11 @@ export function CmsProvider({ children }: CmsProviderProps) {
   };
 
   useEffect(() => {
+    if (IS_STATIC_CMS_MODE) {
+      setIsReady(true);
+      return;
+    }
+
     void refresh();
   }, []);
 
