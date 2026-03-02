@@ -5,7 +5,7 @@ Production-ready portfolio platform built with React, Vite, TypeScript, Express,
 This project is not a static template. It ships as a small full-stack app with:
 
 - a public portfolio site
-- a protected `/admin` CMS for the client
+- a protected CMS for the client, with a configurable admin route
 - draft vs published content visibility
 - built-in analytics for page views and key actions
 - a lightweight SQLite-backed content store
@@ -41,7 +41,7 @@ Content is stored as JSON in SQLite and seeded automatically from the TypeScript
 ## Core capabilities
 
 - Public portfolio pages backed by a CMS content layer
-- Protected `/admin` editor for site settings, homepage sections, page copy, projects, and journal posts
+- Protected admin editor for site settings, homepage sections, page copy, projects, and journal posts
 - Draft/published support so visitors never see unpublished work
 - Analytics dashboard with visitor counts, page views, tracked actions, and recent events
 - Lazy-loaded page routes and split production bundles
@@ -57,7 +57,7 @@ flowchart LR
   Client[React + Vite Client]
   Admin[Client Admin UI]
   API[Express API]
-  Auth[Signed Cookie Session]
+  Auth[Server session + CSRF]
   DB[(SQLite content + analytics)]
 
   Visitor --> Client
@@ -92,7 +92,7 @@ flowchart TD
 
 - Public visitors can only read published content.
 - Admin users authenticate through `/api/auth/login`.
-- Authenticated admin requests use a signed `httpOnly` cookie.
+- Authenticated admin requests use a server-backed `httpOnly` session plus CSRF protection.
 - Analytics are collected anonymously using a client-side generated session ID stored in localStorage.
 
 ## Tech stack
@@ -113,7 +113,7 @@ flowchart TD
 - Express 4
 - `better-sqlite3`
 - `dotenv`
-- custom signed-cookie auth
+- server-backed admin sessions
 
 ### Tooling
 
@@ -196,7 +196,18 @@ When admin content is returned:
 
 ## Authentication model
 
-Admin access is available at `/admin`.
+Admin access is available at the configured admin route.
+
+Default route:
+
+```text
+/admin
+```
+
+Recommended:
+
+- move the admin UI to a non-default path with `VITE_ADMIN_PATH`
+- restrict admin/auth requests with `ADMIN_ALLOWED_IPS`
 
 Authentication flow:
 
@@ -222,6 +233,7 @@ Login and request hardening:
 
 - repeated failed logins are rate-limited
 - cross-site write requests are rejected by origin checks
+- admin and auth endpoints can be limited to trusted IPs only
 - auth and admin responses are marked `Cache-Control: no-store`
 - the server applies security headers such as `X-Frame-Options`, `X-Content-Type-Options`, HSTS in HTTPS production, and a restrictive baseline CSP for framing/object usage
 
@@ -275,7 +287,7 @@ Default analytics window: `14` days.
 
 ### Private route
 
-- `/admin`
+- `VITE_ADMIN_PATH` value, defaulting to `/admin`
 
 ## API surface
 
@@ -306,8 +318,11 @@ Use the values in [.env.example](.env.example) as the starting point.
 | `ADMIN_PASSWORD` | Dev only | Plaintext fallback password for local development only |
 | `ADMIN_PASSWORD_HASH` | Yes in production | Scrypt password hash for admin login |
 | `SESSION_SECRET` | Yes | Secret used to hash session tokens and bind sessions securely |
+| `VITE_ADMIN_PATH` | No | Build-time client route for the admin UI, defaults to `/admin` |
 | `APP_ORIGIN` | No | Primary allowed browser origin for authenticated admin writes |
 | `ALLOWED_ORIGINS` | No | Comma-separated extra allowed origins for authenticated admin writes |
+| `ADMIN_ALLOWED_IPS` | No | Comma-separated exact IPv4 addresses or IPv4 CIDR ranges allowed to reach admin/auth endpoints |
+| `TRUST_PROXY` | No | Enables correct client IP detection behind a reverse proxy |
 | `ADMIN_LOGIN_WINDOW_MINUTES` | No | Window used for login attempt counting |
 | `ADMIN_LOGIN_BLOCK_MINUTES` | No | Temporary lockout duration after too many failed logins |
 | `ADMIN_LOGIN_MAX_ATTEMPTS` | No | Maximum failed login attempts allowed within the window |
@@ -340,8 +355,11 @@ Example values:
 ADMIN_USERNAME=client
 ADMIN_PASSWORD_HASH=
 SESSION_SECRET=replace-this-with-a-long-random-secret
+VITE_ADMIN_PATH=/client-portal
 APP_ORIGIN=
 ALLOWED_ORIGINS=
+ADMIN_ALLOWED_IPS=203.0.113.10,198.51.100.0/24
+TRUST_PROXY=true
 ADMIN_LOGIN_WINDOW_MINUTES=15
 ADMIN_LOGIN_BLOCK_MINUTES=30
 ADMIN_LOGIN_MAX_ATTEMPTS=5
@@ -378,6 +396,8 @@ Open:
 ```text
 http://localhost:3000/admin
 ```
+
+If you set `VITE_ADMIN_PATH`, use that route instead.
 
 Use the credentials from your environment variables.
 
@@ -419,6 +439,9 @@ npm run start
 - Do not deploy with the example admin credentials.
 - Use `ADMIN_PASSWORD_HASH` instead of `ADMIN_PASSWORD`.
 - Set a strong `SESSION_SECRET`.
+- Move the admin UI off `/admin` with `VITE_ADMIN_PATH`.
+- Restrict access further with `ADMIN_ALLOWED_IPS` if the client has stable office or VPN IPs.
+- Set `TRUST_PROXY` correctly if the app sits behind Nginx, Cloudflare, Railway, Render, Fly.io, or another reverse proxy.
 - Set `APP_ORIGIN` or `ALLOWED_ORIGINS` if admin writes can originate from another trusted origin.
 - If frontend and backend are on different origins, set `VITE_API_BASE_URL`.
 - Ensure the reverse proxy forwards cookies correctly.
@@ -440,3 +463,4 @@ Both should pass before deployment.
 - Public visitors are always read-only.
 - Draft projects and draft journal posts are hidden from the public API.
 - The admin area reads and writes live content directly through the server API.
+- IP allowlisting works best when the client uses a fixed public IP or reaches the site through a VPN with a stable egress IP.
