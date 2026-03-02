@@ -11,6 +11,7 @@
     "preview": "vite preview",
     "clean": "rm -rf dist",
     "start": "tsx server/index.ts",
+    "hash:password": "tsx server/hash-password.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.server.json --noEmit",
     "lint": "npm run typecheck && eslint src server --ext .ts,.tsx"
   },

@@ -143,6 +143,7 @@ export interface CmsEnvelope {
 export interface AuthSession {
   authenticated: boolean;
   username?: string;
+  csrfToken?: string;
 }
 
 export type AnalyticsEventType =

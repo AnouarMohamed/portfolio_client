@@ -6,9 +6,19 @@ import type {
 } from './schema';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL ?? '';
+let adminCsrfToken: string | null = null;
+
+function syncAuthSession(session: AuthSession) {
+  adminCsrfToken = session.authenticated ? session.csrfToken ?? null : null;
+  return session;
+}
 
 async function readJson<T>(response: Response) {
   if (!response.ok) {
+    if (response.status === 401 || response.status === 403) {
+      adminCsrfToken = null;
+    }
+
     const payload = await response.json().catch(() => null);
     const message =
       payload && typeof payload === 'object' && 'error' in payload
@@ -51,6 +61,7 @@ export async function saveAdminContent(content: CmsContent) {
     credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
+      ...(adminCsrfToken ? { 'X-CSRF-Token': adminCsrfToken } : {}),
     },
     body: JSON.stringify({ content }),
   });
@@ -63,7 +74,7 @@ export async function fetchAuthSession() {
     credentials: 'include',
   });
 
-  return readJson<AuthSession>(response);
+  return syncAuthSession(await readJson<AuthSession>(response));
 }
 
 export async function loginAdmin(credentials: {
@@ -79,14 +90,15 @@ export async function loginAdmin(credentials: {
     body: JSON.stringify(credentials),
   });
 
-  return readJson<AuthSession>(response);
+  return syncAuthSession(await readJson<AuthSession>(response));
 }
 
 export async function logoutAdmin() {
   const response = await fetch(`${API_BASE}/api/auth/logout`, {
     method: 'POST',
     credentials: 'include',
+    headers: adminCsrfToken ? { 'X-CSRF-Token': adminCsrfToken } : undefined,
   });
 
-  return readJson<AuthSession>(response);
+  return syncAuthSession(await readJson<AuthSession>(response));
 }
