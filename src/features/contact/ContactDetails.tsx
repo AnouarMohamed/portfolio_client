@@ -31,12 +31,12 @@ export function ContactDetails({ selectedProject, selectedService }: ContactDeta
         <div className="mb-8 flex flex-wrap gap-3">
           {selectedProject && (
             <div className="inline-flex rounded-full border border-brand-accent/20 bg-brand-paper px-5 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-brand-accent">
-              Project: {selectedProject}
+              Highlight: {selectedProject}
             </div>
           )}
           {selectedService && (
             <div className="inline-flex rounded-full border border-brand-ink/10 bg-white px-5 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-brand-ink">
-              Service: {selectedService}
+              Reason: {selectedService}
             </div>
           )}
         </div>

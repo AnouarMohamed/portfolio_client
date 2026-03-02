@@ -9,8 +9,8 @@ export default function Portfolio() {
   } = useCms();
 
   usePageMeta({
-    title: 'Portfolio',
-    description: 'Selected case studies in portfolio design, brand direction, product surfaces, and frontend implementation.',
+    title: 'Highlights',
+    description: 'Clinical experiences, creative projects, research, and personal reflections that are shaping how I learn and live.',
   });
 
   return (

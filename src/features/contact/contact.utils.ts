@@ -1,5 +1,5 @@
 export function createInquiryMessage(siteName: string, projectName: string) {
-  return `Hi ${siteName},\n\nI'm interested in discussing ${projectName}. Here is a bit more context:`;
+  return `Hi ${siteName},\n\nI'm reaching out after reading ${projectName}. Here is a little context:`;
 }
 
 export function isValidEmailAddress(email: string) {
@@ -8,6 +8,7 @@ export function isValidEmailAddress(email: string) {
 
 export function buildInquiryMailtoUrl(args: {
   contactEmail: string;
+  siteName: string;
   name: string;
   email: string;
   message: string;
@@ -17,16 +18,16 @@ export function buildInquiryMailtoUrl(args: {
   projectName?: string;
 }) {
   const subject = args.projectName
-    ? `Project inquiry - ${args.projectName}`
-    : `Project inquiry from ${args.name}`;
+    ? `Message for ${args.siteName} - ${args.projectName}`
+    : `Hello ${args.siteName} - ${args.name}`;
 
   const body = [
     `Name: ${args.name}`,
     `Email: ${args.email}`,
-    `Service: ${args.service}`,
-    `Budget: ${args.budget}`,
-    `Timeline: ${args.timeline}`,
-    args.projectName ? `Project: ${args.projectName}` : null,
+    `Reason: ${args.service}`,
+    `Current focus: ${args.budget}`,
+    `Timing: ${args.timeline}`,
+    args.projectName ? `Highlight: ${args.projectName}` : null,
     '',
     args.message,
   ]

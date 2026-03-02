@@ -44,7 +44,7 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
             ))}
           </div>
           <div className="mt-6 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-white">
-            View Case Study
+            View Highlight
             <ArrowUpRight size={14} />
           </div>
         </div>
@@ -52,7 +52,7 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
 
       <Link
         to={projectPath}
-        aria-label={`View ${project.title} case study`}
+        aria-label={`View ${project.title} highlight`}
         className="absolute inset-0 z-10 rounded-3xl"
         onClick={() => {
           trackAnalyticsEvent({

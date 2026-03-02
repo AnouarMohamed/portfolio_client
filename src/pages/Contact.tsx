@@ -1,21 +1,17 @@
 import { motion } from 'motion/react';
 import { useSearchParams } from 'react-router-dom';
-import { useCms } from '../cms/useCms';
 import { ContactDetails } from '../features/contact/ContactDetails';
 import { InquiryForm } from '../features/contact/InquiryForm';
 import { usePageMeta } from '../hooks/usePageMeta';
 
 export default function Contact() {
-  const {
-    content: { site },
-  } = useCms();
   const [searchParams] = useSearchParams();
   const selectedProject = searchParams.get('project')?.trim() ?? '';
   const selectedService = searchParams.get('service')?.trim() ?? '';
 
   usePageMeta({
-    title: 'Start a project',
-    description: `Start a project with ${site.siteName} for portfolio design, brand direction, product surfaces, and frontend implementation.`,
+    title: 'Say Hello | Aya Anouar',
+    description: 'Reach out to me about medicine, research, art, volunteering, or a thoughtful conversation.',
   });
 
   return (

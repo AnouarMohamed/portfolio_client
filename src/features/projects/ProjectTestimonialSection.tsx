@@ -14,7 +14,7 @@ export function ProjectTestimonialSection({ project }: ProjectTestimonialSection
   return (
     <section className="px-6 py-20">
       <div className="mx-auto max-w-5xl rounded-[2.5rem] bg-brand-ink p-10 text-white md:p-16">
-        <p className="mb-6 text-xs font-semibold uppercase tracking-[0.35em] text-brand-soft-gold">Client perspective</p>
+        <p className="mb-6 text-xs font-semibold uppercase tracking-[0.35em] text-brand-soft-gold">Personal note</p>
         <blockquote className="mb-10 text-3xl font-serif leading-tight italic md:text-4xl">
           {project.testimonial.quote}
         </blockquote>
@@ -24,10 +24,10 @@ export function ProjectTestimonialSection({ project }: ProjectTestimonialSection
             <div className="text-sm text-white/65">{project.testimonial.role}</div>
           </div>
           <Link
-            to="/contact"
+            to={`/contact?project=${encodeURIComponent(project.title)}&service=${encodeURIComponent(project.services[0] ?? 'Say hello')}`}
             className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-[0.3em] text-white transition-colors hover:text-brand-soft-gold"
           >
-            Start Your Project
+            Write to me
             <ArrowRight size={16} />
           </Link>
         </div>

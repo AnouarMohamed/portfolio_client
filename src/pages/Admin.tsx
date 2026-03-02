@@ -47,8 +47,8 @@ export default function Admin() {
   } = useAdminController();
 
   usePageMeta({
-    title: 'Client editor',
-    description: 'Protected client editor for Aura Studio website content.',
+    title: 'Website editor',
+    description: 'Protected website editor for Aya Anouar.',
   });
 
   const editors = useMemo<Record<AdminTab, ReactNode>>(

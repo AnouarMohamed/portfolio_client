@@ -62,16 +62,16 @@ export function Footer() {
               to="/contact"
               className="mt-6 inline-flex rounded-full bg-brand-ink px-5 py-3 text-xs font-bold uppercase tracking-[0.28em] text-white transition-colors hover:bg-brand-accent"
               data-analytics-event="cta_click"
-              data-analytics-label="Footer start a project"
+              data-analytics-label="Footer get in touch"
               data-analytics-path="/contact"
             >
-              Start a Project
+              Get in touch
             </Link>
           </div>
         </div>
 
         <div className="flex flex-col items-center justify-between border-t border-brand-ink/5 pt-8 text-sm text-brand-muted md:flex-row">
-          <p>&copy; {year} {site.siteName} Portfolio. All rights reserved.</p>
+          <p>&copy; {year} {site.siteName}. All rights reserved.</p>
           <p className="mt-4 font-serif italic md:mt-0">{site.footerTagline}</p>
         </div>
       </div>

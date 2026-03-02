@@ -2,212 +2,215 @@ import type { CmsHomeContent } from './schema';
 
 export const DEFAULT_HOME_CONTENT: CmsHomeContent = {
   hero: {
-    badge: 'Strategy-led portfolio design and frontend craft',
-    titleLeading: 'Make the work feel',
-    titleHighlight: 'as strong online',
-    titleTrailing: 'as it is in real life.',
+    badge: 'Fifth-year medical student, painter, and curious observer',
+    titleLeading: 'Medicine taught me to',
+    titleHighlight: 'look closely',
+    titleTrailing: 'and live gently.',
     description:
-      'Aura Studio designs sharper portfolio, brand, and launch experiences for founders and teams whose current site looks fine but says too little.',
-    primaryCtaLabel: 'Start a Project',
-    primaryCtaHref: '/contact?service=Portfolio%20Design',
-    secondaryCtaLabel: 'Browse Case Studies',
+      "I'm Aya Anouar, a fifth-year medical student building a life around attentive care, disciplined study, painting, reading, and the small rituals that keep long hospital days human.",
+    primaryCtaLabel: 'Say Hello',
+    primaryCtaHref: '/contact?service=Say%20hello',
+    secondaryCtaLabel: 'Browse Highlights',
     secondaryCtaHref: '/portfolio',
-    showcaseEyebrow: 'Recent engagement',
-    showcaseTitle:
-      'Portfolio repositioning for a product consultant scaling into studio work.',
+    showcaseEyebrow: 'Right now',
+    showcaseTitle: 'Clerkships, sketchbooks, and finding calm inside busy weeks.',
     showcaseDescription:
-      'Messaging, case-study architecture, new visual language, and implementation cleanup across the full marketing surface.',
+      'A personal collection of clinical reflections, student projects, creative habits, and the things shaping how I listen, learn, and show up for people.',
     showcaseImage:
-      'https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?auto=format&fit=crop&q=80&w=1400',
-    showcaseImageAlt: 'Portfolio detail composition',
+      'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=1400',
+    showcaseImageAlt: 'Desk with notebooks, coffee, and painting materials',
   },
   stats: [
     {
-      id: 'stat-launches',
-      value: '32',
-      label: 'Launches shipped',
-      detail: 'Across portfolio, product and brand work.',
+      id: 'stat-year',
+      value: '5th',
+      label: 'Year of medicine',
+      detail: 'Currently learning through clinical rotations, rounds, and long evenings of reflection.',
     },
     {
-      id: 'stat-conversion',
-      value: '4.8x',
-      label: 'Average conversion lift',
-      detail: 'Measured across redesign engagements.',
+      id: 'stat-sketchbooks',
+      value: '3',
+      label: 'Sketchbooks filled recently',
+      detail: 'Mostly anatomy studies, portraits, and color notes after long days.',
     },
     {
-      id: 'stat-craft',
-      value: '12 yrs',
-      label: 'Combined craft',
-      detail: 'Strategy, visual systems and frontend delivery.',
+      id: 'stat-anchors',
+      value: '4',
+      label: 'Things that keep me grounded',
+      detail: 'Medicine, painting, books, and movement.',
     },
   ],
-  trustMarks: ['Northstar', 'Luma', 'Fieldhouse', 'Vanta Labs', 'Atelier No. 9'],
+  trustMarks: [
+    'Pediatrics',
+    'Internal Medicine',
+    'Community Health',
+    'Painting',
+    'Research',
+  ],
   servicesIntro: {
-    eyebrow: 'Services',
-    title:
-      'Design and frontend work that sharpens your positioning, not just your pixels.',
+    eyebrow: 'Current rhythms',
+    title: 'Medicine is the center, but it is not the whole story.',
     description:
-      'Aura focuses on the public-facing surfaces that shape first impressions: portfolios, product marketing pages, launch sites, and the systems behind them.',
+      'My days move between clerkships, handwritten notes, painting sessions, novels, playlists, and the quiet habits that make demanding work sustainable.',
   },
   services: [
     {
-      id: 'service-brand-systems',
-      title: 'Portfolio and brand systems',
+      id: 'service-clinical-learning',
+      title: 'Clinical learning',
       description:
-        'Sharper positioning, tighter storytelling, and a visual system that stops your work from looking interchangeable.',
-      deliverables: ['Positioning direction', 'Visual language', 'Launch-ready pages'],
+        "I'm especially drawn to the human side of medicine: listening carefully, noticing subtle changes, and earning trust with calm communication.",
+      deliverables: ['Pediatrics and internal medicine rotations', 'Case reflections', 'Growing confidence on ward rounds'],
     },
     {
-      id: 'service-product-marketing',
-      title: 'Product marketing surfaces',
+      id: 'service-painting',
+      title: 'Painting and visual notes',
       description:
-        'Pages and flows that connect product value to action without reading like feature soup.',
-      deliverables: ['Homepage systems', 'Feature narratives', 'Conversion modules'],
+        'Painting is both rest and study. It sharpens observation, patience, and a comfort with detail that travels back into medicine.',
+      deliverables: ['Anatomy sketches', 'Portrait studies', 'Small acrylic and watercolor series'],
     },
     {
-      id: 'service-frontend',
-      title: 'Frontend implementation',
+      id: 'service-everyday-life',
+      title: 'Life outside the hospital',
       description:
-        'Production-quality React builds with responsive behavior, motion restraint, and maintainable structure.',
-      deliverables: ['Component architecture', 'Responsive polish', 'Performance cleanup'],
+        'I like long walks, novels, playlists for late-night studying, and any excuse to sit near sunlight with a notebook.',
+      deliverables: ['Reading and journaling', 'Coffee with friends', 'Reset rituals after busy weeks'],
     },
   ],
   featuredIntro: {
-    eyebrow: 'Selected work',
-    title: 'Case studies built around positioning, systems, and commercial clarity.',
+    eyebrow: 'Highlights',
+    title: 'Experiences and personal projects that show how I think, learn, and care.',
     description:
-      'Each project connects narrative, visual hierarchy, and implementation so the final site does more than look refined.',
-    ctaLabel: 'View full portfolio',
+      'This page holds clinical moments, community work, research, and creative practice in the same place because all of them are shaping the person I am becoming as a doctor.',
+    ctaLabel: 'View all highlights',
     ctaHref: '/portfolio',
   },
   differentiatorsIntro: {
-    eyebrow: 'Why this works',
-    title: 'Better portfolios do three things well: they position, they prove, and they convert.',
+    eyebrow: 'What guides me',
+    title: 'Curiosity, steadiness, and attention to the person behind the situation.',
   },
   differentiators: [
     {
-      id: 'diff-strategy',
+      id: 'diff-observation',
       icon: 'heart-handshake',
-      title: 'Strategy before decoration',
+      title: 'Observation first',
       description:
-        'The site is structured around what must be understood, trusted, and acted on.',
+        'I pay attention to tone, hesitation, body language, and the small human details that often matter before the obvious answer appears.',
     },
     {
-      id: 'diff-build',
-      icon: 'code-2',
-      title: 'Design that survives build',
+      id: 'diff-discipline',
+      icon: 'clock-3',
+      title: 'Discipline without drama',
       description:
-        'Systems are designed with implementation in mind, so the launch does not collapse into compromises.',
+        'Long days do not scare me. I like routines, preparation, and the quiet confidence that comes from showing up consistently.',
     },
     {
-      id: 'diff-voice',
+      id: 'diff-creativity',
       icon: 'sparkles',
-      title: 'Less template energy',
+      title: 'Creativity keeps me human',
       description:
-        'The final result is sharper, more editorial, and more specific to the client than standard portfolio kits.',
+        'Painting, writing, and reflective habits help me stay open, curious, and emotionally present inside demanding environments.',
     },
   ],
   processIntro: {
-    eyebrow: 'Process',
-    title: 'Clear enough to move quickly, rigorous enough to hold up in production.',
+    eyebrow: 'How I learn',
+    title: 'I tend to learn in four steps: notice, study, reflect, repeat.',
     description:
-      'The workflow is built to get from foggy ambition to a launch-ready surface without bloating the project.',
+      'It is a simple rhythm, but it helps me turn busy experiences into something lasting and personal.',
   },
   process: [
     {
-      id: 'process-position',
+      id: 'process-notice',
       icon: 'sparkles',
-      title: 'Position',
+      title: 'Notice',
       description:
-        'We define the point of view, audience, and offer so the work knows what it is trying to win.',
+        'I start by paying close attention: what is being said, what is being avoided, and what the room feels like.',
     },
     {
-      id: 'process-shape',
+      id: 'process-study',
       icon: 'zap',
-      title: 'Shape',
+      title: 'Study',
       description:
-        'We turn that strategy into clear page structures, visual hierarchy, and interaction patterns.',
+        'Then comes the work: reading, reviewing cases, asking better questions, and filling the gaps with intention.',
     },
     {
-      id: 'process-build',
-      icon: 'code-2',
-      title: 'Build',
-      description:
-        'We implement the interface with production-grade React patterns, responsive behavior, and clean structure.',
-    },
-    {
-      id: 'process-launch',
+      id: 'process-reflect',
       icon: 'camera',
-      title: 'Launch',
+      title: 'Reflect',
       description:
-        'We polish the release layer: page titles, performance, assets, and the details people actually notice.',
+        'I write things down, sketch, and revisit difficult moments so they become lessons instead of blurred memories.',
+    },
+    {
+      id: 'process-repeat',
+      icon: 'heart-handshake',
+      title: 'Return',
+      description:
+        'The next day I come back steadier, a little clearer, and more prepared to care for the person in front of me.',
     },
   ],
   testimonialsIntro: {
-    eyebrow: 'Client feedback',
-    title:
-      'The work should feel specific enough that clients notice the difference immediately.',
+    eyebrow: 'Personal notes',
+    title: 'A few thoughts I keep coming back to.',
   },
   testimonials: [
     {
-      id: 'testimonial-elena',
+      id: 'testimonial-senior',
       quote:
-        'Aura took a visually decent site and turned it into a business asset. The story, structure, and frontend polish changed how prospects responded.',
-      author: 'Elena Rossi',
-      role: 'Founder, Atelier North',
+        'I want the people I care for to feel that I am paying attention before they remember anything else about me.',
+      author: 'On clinical presence',
+      role: 'A note I return to often',
     },
     {
-      id: 'testimonial-marcus',
+      id: 'testimonial-peer',
       quote:
-        'The biggest difference was clarity. Every page suddenly had intent, and the product narrative started converting instead of just looking premium.',
-      author: 'Marcus Thorne',
-      role: 'Product Lead, Fieldhouse',
+        'I am learning that rest does not always mean stopping. Sometimes it means painting for an hour until the day feels human again.',
+      author: 'On recovery',
+      role: 'After long hospital days',
     },
     {
-      id: 'testimonial-sophia',
+      id: 'testimonial-community',
       quote:
-        'We hired Aura for design polish and ended up getting a much stronger system than expected, both visually and technically.',
-      author: 'Sophia Chen',
-      role: 'Principal, SC Studio',
+        'I hope the people around me feel calmer, not smaller, after speaking with me.',
+      author: 'On showing up well',
+      role: 'Something I try to protect',
     },
     {
-      id: 'testimonial-ibrahim',
+      id: 'testimonial-creative',
       quote:
-        'Rare combination of taste, restraint, and technical discipline. The result felt custom because it actually was.',
-      author: 'Ibrahim El-Mansouri',
-      role: 'Founder, Luma Practice',
+        'I do some of my clearest thinking with a brush in my hand and no need to explain myself yet.',
+      author: 'On painting',
+      role: 'The quiet part of my week',
     },
   ],
   faqIntro: {
-    eyebrow: 'FAQ',
-    title: 'A few things people usually ask before we start.',
+    eyebrow: 'Quick notes',
+    title: 'A few things people usually want to know about me.',
   },
   faqs: [
     {
-      id: 'faq-fit',
-      question: 'What kind of clients is Aura best for?',
+      id: 'faq-interests',
+      question: 'What kind of medicine am I most drawn to?',
       answer:
-        'Founders, consultants, studios, and product teams who already have strong work but need sharper presentation, stronger conversion, and less template energy.',
+        'I am especially interested in pediatrics, community health, and the parts of medicine that depend on trust, patience, and careful communication.',
     },
     {
-      id: 'faq-design-build',
-      question: 'Do you only design or do you also build?',
+      id: 'faq-outside',
+      question: 'What do I do outside medicine?',
       answer:
-        'Both. Aura handles strategy, direction, interface design, and React/Vite implementation so the final launch matches the concept.',
+        'I paint, read novels, keep journals, take long walks, and build little routines that help demanding weeks feel more livable.',
     },
     {
-      id: 'faq-start',
-      question: 'How do projects usually start?',
+      id: 'faq-building',
+      question: 'What am I hoping to keep building next?',
       answer:
-        'With a focused audit and positioning pass. That sets the narrative, priorities, and content hierarchy before we touch polished interface work.',
+        'Deeper clinical confidence, thoughtful research habits, and a life where creativity still has room beside medicine.',
     },
   ],
   finalCta: {
-    eyebrow: 'Next step',
-    title: 'If the work is solid but the site still feels generic, that is fixable.',
+    eyebrow: 'Say hello',
+    title: 'If you want to connect about medicine, art, books, or a student opportunity, I would love to hear from you.',
     description:
-      'Aura helps turn strong raw material into a portfolio or launch surface that tells a clearer story and makes a sharper first impression.',
-    buttonLabel: 'Start a Project',
-    buttonHref: '/contact',
+      'This site is meant to feel personal on purpose. If something here resonated, send a note.',
+    buttonLabel: 'Get in touch',
+    buttonHref: '/contact?service=Say%20hello',
   },
 };

@@ -2,41 +2,41 @@ import type { CmsPagesContent } from './schema';
 
 export const DEFAULT_PAGES_CONTENT: CmsPagesContent = {
   portfolio: {
-    eyebrow: 'Portfolio',
-    title: 'Case studies built to prove taste, process, and commercial clarity.',
+    eyebrow: 'Highlights',
+    title: 'Clinical experiences, creative projects, and small chapters that say a lot about me.',
     description:
-      'This is not a wall of thumbnails. Each project is treated as a system: positioning, hierarchy, interface choices, and implementation working together.',
+      'This is where rotations, research, community work, and painting practice sit beside each other. Together, they tell a more honest story than any single category could.',
   },
   about: {
-    eyebrow: 'About Aura Studio',
-    titleLeading: 'Quiet visuals are not enough.',
-    titleHighlight: 'The structure has to work too.',
+    eyebrow: 'About me',
+    titleLeading: 'Care, curiosity, and',
+    titleHighlight: 'a sketchbook in the bag',
     titleTrailing: '',
     paragraphs: [
-      'Aura Studio exists for clients whose work is already strong but whose site still feels too safe, too vague, or too close to everyone else in the market.',
-      'The studio combines brand thinking, interface design, and frontend implementation so the final experience feels coherent from headline to hover state. The goal is not maximal style. It is precise presentation with enough character to be remembered.',
-      'Most engagements begin with positioning and narrative cleanup, because weak structure cannot be solved with polished layouts alone. Once the page story is sharp, the visual and technical layers can actually do their job.',
+      'I am a fifth-year medical student who cares deeply about the human side of medicine: how trust is built, how calm changes a room, and how closely we have to listen before we can really help.',
+      'Outside the hospital, I paint, read, journal, and collect small routines that make heavy weeks feel lighter. Those habits are not separate from medicine for me. They shape how I observe, reflect, and stay emotionally present.',
+      'This site is simply a quieter way to present that whole picture: the student, the future doctor, the painter, the reader, and the person still learning how to hold all of it at once.',
     ],
     image:
-      'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&q=80&w=1200',
-    imageAlt: 'Studio work session',
+      'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=1200',
+    imageAlt: 'Portrait of a woman smiling softly outdoors',
     bestFit:
-      'Founders, consultants, creative studios, and product teams that need sharper presentation and cleaner frontend delivery.',
+      'People interested in thoughtful medicine, student research, community work, creative practice, or simply honest conversation.',
   },
   contact: {
-    badge: 'Discovery calls and scoped inquiries',
-    titleLeading: "Let's make the site",
-    titleHighlight: 'feel more intentional.',
-    titleTrailing: '',
+    badge: 'Notes, opportunities, and warm hellos',
+    titleLeading: 'Say',
+    titleHighlight: 'hello',
+    titleTrailing: '.',
     description:
-      'If the work is strong but the presentation feels generic, vague, or underpowered, Aura can help tighten the message, visual system, and frontend layer.',
+      'Whether it is about medicine, research, volunteering, painting, or simply introducing yourself, this is the place to reach out to me.',
     formNote:
-      'This form drafts the inquiry in your default email app so you can review and send it with all the project details already structured.',
-    submitLabel: 'Draft Inquiry',
+      'This form opens a drafted email to me so you can edit it and send it in your own words.',
+    submitLabel: 'Draft Email',
   },
   journal: {
-    title: 'Journal',
+    title: 'Notes and sketches',
     description:
-      'Notes on portfolio strategy, design systems, product storytelling, and launch surfaces from Aura Studio.',
+      'Reflections on medicine, study life, painting, books, and the habits helping me stay grounded.',
   },
 };

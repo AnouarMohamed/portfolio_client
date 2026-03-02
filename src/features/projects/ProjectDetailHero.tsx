@@ -13,7 +13,7 @@ export function ProjectDetailHero({ project }: ProjectDetailHeroProps) {
         <div className="mb-10 flex flex-wrap items-center justify-between gap-4 text-sm uppercase tracking-[0.25em] text-brand-muted">
           <Link to="/portfolio" className="inline-flex items-center gap-2 transition-colors hover:text-brand-ink">
             <ArrowLeft size={16} />
-            Back to Portfolio
+            Back to Highlights
           </Link>
           <span>{project.category}</span>
         </div>
@@ -38,11 +38,11 @@ export function ProjectDetailHero({ project }: ProjectDetailHeroProps) {
                 <div className="text-lg text-brand-ink">{project.role}</div>
               </div>
               <div>
-                <div className="mb-2 text-xs font-semibold uppercase tracking-[0.3em] text-brand-muted">Duration</div>
+                <div className="mb-2 text-xs font-semibold uppercase tracking-[0.3em] text-brand-muted">Length</div>
                 <div className="text-lg text-brand-ink">{project.duration}</div>
               </div>
               <div>
-                <div className="mb-2 text-xs font-semibold uppercase tracking-[0.3em] text-brand-muted">Services</div>
+                <div className="mb-2 text-xs font-semibold uppercase tracking-[0.3em] text-brand-muted">Focus areas</div>
                 <div className="flex flex-wrap gap-2">
                   {project.services.map((service) => (
                     <span key={service} className="rounded-full bg-brand-paper px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-brand-ink">
@@ -52,10 +52,10 @@ export function ProjectDetailHero({ project }: ProjectDetailHeroProps) {
                 </div>
               </div>
               <Link
-                to={`/contact?project=${encodeURIComponent(project.title)}&service=${encodeURIComponent(project.services[0] ?? 'Portfolio Design')}`}
+                to={`/contact?project=${encodeURIComponent(project.title)}&service=${encodeURIComponent(project.services[0] ?? 'Say hello')}`}
                 className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-[0.3em] text-brand-ink transition-colors hover:text-brand-accent"
               >
-                Start a Similar Project
+                Ask me about this
                 <ArrowRight size={16} />
               </Link>
             </div>

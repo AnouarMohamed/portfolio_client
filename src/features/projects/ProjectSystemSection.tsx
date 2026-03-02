@@ -11,8 +11,8 @@ export function ProjectSystemSection({ project }: ProjectSystemSectionProps) {
     <section className="px-6 py-20">
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-12 lg:grid-cols-[1.2fr_0.8fr]">
         <div>
-          <p className="mb-4 text-xs font-semibold uppercase tracking-[0.35em] text-brand-accent">System details</p>
-          <h2 className="mb-6 text-4xl font-serif md:text-5xl">Built to hold together across design, story, and implementation.</h2>
+          <p className="mb-4 text-xs font-semibold uppercase tracking-[0.35em] text-brand-accent">Details</p>
+          <h2 className="mb-6 text-4xl font-serif md:text-5xl">The textures, tools, and small details around the experience.</h2>
           <p className="max-w-2xl text-lg leading-relaxed text-brand-muted">
             {project.summary}
           </p>
@@ -33,7 +33,7 @@ export function ProjectSystemSection({ project }: ProjectSystemSectionProps) {
 
         <aside className="rounded-[2rem] border border-brand-ink/8 bg-white/70 p-8 shadow-xl shadow-brand-ink/5 backdrop-blur-sm">
           <div className="mb-8">
-            <div className="mb-3 text-xs font-semibold uppercase tracking-[0.35em] text-brand-muted">Service mix</div>
+            <div className="mb-3 text-xs font-semibold uppercase tracking-[0.35em] text-brand-muted">Themes</div>
             <div className="flex flex-wrap gap-2">
               {project.tags.map((tag) => (
                 <span key={tag} className="rounded-full bg-brand-paper px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-brand-ink">
@@ -44,7 +44,7 @@ export function ProjectSystemSection({ project }: ProjectSystemSectionProps) {
           </div>
 
           <div className="mb-8">
-            <div className="mb-3 text-xs font-semibold uppercase tracking-[0.35em] text-brand-muted">Stack and tools</div>
+            <div className="mb-3 text-xs font-semibold uppercase tracking-[0.35em] text-brand-muted">Tools and references</div>
             <ul className="space-y-3">
               {project.stack.map((item) => (
                 <li key={item} className="text-brand-muted">{item}</li>
@@ -53,10 +53,10 @@ export function ProjectSystemSection({ project }: ProjectSystemSectionProps) {
           </div>
 
           <Link
-            to={`/contact?project=${encodeURIComponent(project.title)}&service=${encodeURIComponent(project.services[0] ?? 'Portfolio Design')}`}
+            to={`/contact?project=${encodeURIComponent(project.title)}&service=${encodeURIComponent(project.services[0] ?? 'Say hello')}`}
             className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-[0.3em] text-brand-ink transition-colors hover:text-brand-accent"
           >
-            Build Something Similar
+            Say hello about this
             <ArrowRight size={16} />
           </Link>
         </aside>

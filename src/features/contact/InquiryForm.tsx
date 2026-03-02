@@ -45,9 +45,9 @@ const textFields = [
   ['email', 'Email Address', 'contact-email', 'email', 'jane@example.com', 'email'],
 ] as const;
 const selectFields = [
-  ['service', 'Service', 'contact-service', 'serviceOptions'],
-  ['budget', 'Budget', 'contact-budget', 'budgetOptions'],
-  ['timeline', 'Timeline', 'contact-timeline', 'timelineOptions'],
+  ['service', 'Reason', 'contact-service', 'serviceOptions'],
+  ['budget', 'Current focus', 'contact-budget', 'budgetOptions'],
+  ['timeline', 'Timing', 'contact-timeline', 'timelineOptions'],
 ] as const;
 
 export function InquiryForm({ selectedProject, selectedService }: InquiryFormProps) {
@@ -87,13 +87,13 @@ export function InquiryForm({ selectedProject, selectedService }: InquiryFormPro
 
     if (!name || !email || !message) {
       setStatusTone('error');
-      setStatusMessage('Add your name, email, and project details before sending.');
+      setStatusMessage('Add your name, email, and a short note before sending.');
       return;
     }
 
     if (!isValidEmailAddress(email)) {
       setStatusTone('error');
-      setStatusMessage('Enter a valid email address so the inquiry can be prepared correctly.');
+      setStatusMessage('Enter a valid email address so the drafted message is prepared correctly.');
       return;
     }
 
@@ -110,6 +110,7 @@ export function InquiryForm({ selectedProject, selectedService }: InquiryFormPro
 
     window.location.href = buildInquiryMailtoUrl({
       contactEmail: site.contactEmail,
+      siteName: site.siteName,
       name,
       email,
       message,
@@ -119,7 +120,7 @@ export function InquiryForm({ selectedProject, selectedService }: InquiryFormPro
       projectName: selectedProject || undefined,
     });
     setStatusTone('success');
-    setStatusMessage('Your email app should open with the inquiry prefilled.');
+    setStatusMessage('This should open a drafted email to me.');
   };
 
   return (
@@ -167,7 +168,7 @@ export function InquiryForm({ selectedProject, selectedService }: InquiryFormPro
       </div>
 
       <div className="space-y-2">
-        <label htmlFor="contact-message" className="text-xs font-bold uppercase tracking-widest text-brand-muted">Project context</label>
+        <label htmlFor="contact-message" className="text-xs font-bold uppercase tracking-widest text-brand-muted">Message</label>
         <textarea
           id="contact-message"
           name="message"
@@ -175,7 +176,7 @@ export function InquiryForm({ selectedProject, selectedService }: InquiryFormPro
           value={formData.message}
           onChange={handleChange}
           className={`${fieldClassName} resize-none rounded-[1.75rem]`}
-          placeholder="What are you trying to improve, launch, or clarify?"
+          placeholder="What would you like to tell me?"
           required
         />
       </div>

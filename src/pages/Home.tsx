@@ -11,7 +11,7 @@ import { usePageMeta } from '../hooks/usePageMeta';
 
 export default function Home() {
   usePageMeta({
-    title: 'Strategy-led portfolio design',
+    title: 'Aya Anouar | Fifth-year medical student',
   });
 
   return (

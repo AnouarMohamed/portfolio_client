@@ -8,8 +8,8 @@ export default function About() {
   } = useCms();
 
   usePageMeta({
-    title: 'About the studio',
-    description: 'About Aura Studio: strategy-led portfolio design, brand systems, and frontend implementation for founders and teams.',
+    title: 'About Me | Aya Anouar',
+    description: "I'm Aya Anouar, a fifth-year medical student, painter, reflective writer, and curious observer.",
   });
 
   return (

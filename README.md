@@ -24,8 +24,10 @@ This project is not a static template. It ships as a small full-stack app with:
 - [API surface](#api-surface)
 - [Environment variables](#environment-variables)
 - [Local development](#local-development)
+- [Available scripts](#available-scripts)
 - [Build and deployment](#build-and-deployment)
 - [Verification](#verification)
+- [Notes](#notes)
 
 ## Overview
 
@@ -87,6 +89,64 @@ flowchart TD
   PublicRead --> Filter
   Filter --> Site
 ```
+
+### Frontend runtime
+
+```mermaid
+flowchart LR
+  Browser[Browser]
+  Router[React Router]
+  Provider[CmsProvider]
+  PublicPages[Public pages]
+  AdminPage[Admin page]
+  PublicApi[/api/content/public]
+  AuthApi[/api/auth/session]
+  AdminApi[/api/admin/content]
+  AnalyticsApi[/api/admin/analytics]
+
+  Browser --> Router
+  Router --> Provider
+  Provider --> PublicPages
+  Router --> AdminPage
+  Provider -->|initial public fetch| PublicApi
+  AdminPage -->|session bootstrap| AuthApi
+  AdminPage -->|editable content| AdminApi
+  AdminPage -->|dashboard metrics| AnalyticsApi
+```
+
+### Database layout
+
+```mermaid
+erDiagram
+  content_store {
+    text key PK
+    text value
+    text updated_at
+  }
+
+  admin_sessions {
+    text id PK
+    text username
+    text token_hash
+    text csrf_token
+    text user_agent_hash
+    text created_at
+    text last_seen_at
+    text expires_at
+  }
+
+  analytics_events {
+    int id PK
+    text session_id
+    text event_type
+    text path
+    text label
+    text metadata
+    text created_at
+  }
+```
+
+`content_store` is effectively a keyed document table. The live CMS content is stored under the `content` key as one JSON envelope.
 
 ### Request model
 
@@ -218,6 +278,57 @@ Authentication flow:
 5. Authenticated requests can access `/api/admin/content` and `/api/admin/analytics`
 6. Authenticated write requests must also include a valid CSRF token
 
+### Login sequence
+
+```mermaid
+sequenceDiagram
+  participant B as Admin browser
+  participant A as Express auth route
+  participant L as Login rate limiter
+  participant V as Password verifier
+  participant S as Auth store
+  participant D as SQLite
+
+  B->>A: POST /api/auth/login { username, password }
+  A->>L: check IP + username buckets
+  L-->>A: allowed / blocked
+  A->>V: verify username + password hash
+  V-->>A: valid / invalid
+  alt valid credentials
+    A->>S: createSession(request, username)
+    S->>D: INSERT admin_sessions
+    S-->>A: session + opaque token
+    A-->>B: 200 + httpOnly cookie + csrfToken
+  else invalid credentials
+    A->>L: consume failure
+    A-->>B: 401 Invalid credentials
+  end
+```
+
+### Authenticated write sequence
+
+```mermaid
+sequenceDiagram
+  participant B as Admin browser
+  participant A as Express admin route
+  participant S as Auth store
+  participant C as Content store
+  participant N as Analytics store
+  participant D as SQLite
+
+  B->>A: PUT /api/admin/content + cookie + X-CSRF-Token
+  A->>S: readSessionFromRequest()
+  S->>D: SELECT admin_sessions by token hash
+  S-->>A: session or null
+  A->>S: verifyCsrf()
+  S-->>A: valid / invalid
+  A->>C: writeContent(content)
+  C->>D: UPSERT content_store
+  A->>N: track admin_content_saved
+  N->>D: INSERT analytics_events
+  A-->>B: updated content envelope
+```
+
 Session details:
 
 - cookie name: `aura_admin_session` in development and `__Host-aura_admin_session` in production
@@ -273,6 +384,56 @@ Analytics are intentionally lightweight and internal.
   - recent events
 
 Default analytics window: `14` days.
+
+### Analytics ingestion pipeline
+
+```mermaid
+flowchart LR
+  Action[User action]
+  ClientTrack[trackAnalyticsEvent]
+  LocalGuard[Client dedupe window]
+  Api[/api/analytics/track]
+  Origin[Origin check]
+  IpLimit[Request rate limiter]
+  ServerGuard[Server session dedupe + quotas]
+  Insert[(analytics_events)]
+  Snapshot[Snapshot aggregation]
+  Dashboard[Admin analytics dashboard]
+
+  Action --> ClientTrack
+  ClientTrack --> LocalGuard
+  LocalGuard --> Api
+  Api --> Origin
+  Origin --> IpLimit
+  IpLimit --> ServerGuard
+  ServerGuard --> Insert
+  Insert --> Snapshot
+  Snapshot --> Dashboard
+```
+
+### Analytics snapshot model
+
+```mermaid
+flowchart TD
+  Events[Windowed analytics rows]
+  PageViews[Page views by path and day]
+  Actions[Non-page action counts]
+  Visitors[Unique visitor session IDs]
+  TopPages[Top pages]
+  Breakdown[Action breakdown]
+  Recent[Recent events]
+  Overview[Overview totals]
+
+  Events --> PageViews
+  Events --> Actions
+  Events --> Visitors
+  PageViews --> TopPages
+  Actions --> Breakdown
+  Events --> Recent
+  PageViews --> Overview
+  Actions --> Overview
+  Visitors --> Overview
+```
 
 ## Routes
 
@@ -389,6 +550,20 @@ This starts:
 
 In development, Vite proxies `/api/*` requests to the Express server.
 
+### Local development topology
+
+```mermaid
+flowchart LR
+  Browser[Browser]
+  Vite[Vite dev server :3000]
+  Api[Express API :4000]
+  Db[(SQLite)]
+
+  Browser --> Vite
+  Vite -->|proxy /api/*| Api
+  Api --> Db
+```
+
 ### Admin access
 
 Open:
@@ -431,6 +606,48 @@ To deploy the full system you need:
 npm install
 npm run build
 npm run start
+```
+
+### Production runtime topology
+
+```mermaid
+flowchart LR
+  Browser[Browser]
+  Proxy[Optional reverse proxy or platform edge]
+  App[Express server]
+  Dist[Built dist assets]
+  Api[REST API routes]
+  Db[(SQLite on persistent disk)]
+
+  Browser --> Proxy
+  Proxy --> App
+  App --> Dist
+  App --> Api
+  Api --> Db
+```
+
+If you deploy frontend and backend on different origins, the browser still uses the same client bundle, but API calls are redirected through `VITE_API_BASE_URL`.
+
+### Public vs admin data exposure
+
+```mermaid
+flowchart TD
+  Cms[Stored CMS content]
+  PublicRead[readPublicContent()]
+  AdminRead[readAdminContent()]
+  DraftFilter[Remove draft projects and posts]
+  PublicJson[/api/content/public]
+  AdminJson[/api/admin/content]
+  Visitor[Visitor-facing site]
+  Editor[Authenticated admin]
+
+  Cms --> PublicRead
+  Cms --> AdminRead
+  PublicRead --> DraftFilter
+  DraftFilter --> PublicJson
+  AdminRead --> AdminJson
+  PublicJson --> Visitor
+  AdminJson --> Editor
 ```
 
 ### Deployment notes

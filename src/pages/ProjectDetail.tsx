@@ -15,7 +15,7 @@ export default function ProjectDetail() {
   const project = getProjectBySlug(content, slug);
 
   usePageMeta({
-    title: project ? `${project.title} Case Study` : 'Project Not Found',
+    title: project ? `${project.title} | Aya Anouar` : 'Highlight Not Found | Aya Anouar',
     description: project?.description,
   });
 
@@ -23,16 +23,16 @@ export default function ProjectDetail() {
     return (
       <div className="px-6 pb-40 pt-32">
         <div className="mx-auto max-w-4xl rounded-[2rem] border border-brand-ink/8 bg-white/75 p-10 text-center shadow-xl shadow-brand-ink/5">
-          <p className="mb-4 text-xs font-semibold uppercase tracking-[0.35em] text-brand-accent">Project not found</p>
-          <h1 className="mb-6 text-4xl font-serif md:text-5xl">That case study does not exist anymore.</h1>
+          <p className="mb-4 text-xs font-semibold uppercase tracking-[0.35em] text-brand-accent">Highlight not found</p>
+          <h1 className="mb-6 text-4xl font-serif md:text-5xl">That highlight does not exist anymore.</h1>
           <p className="mb-8 text-lg leading-relaxed text-brand-muted">
-            The portfolio entry you tried to open may have moved or been removed. The rest of the work is still available.
+            The page you tried to open may have moved or been removed. The rest of my highlights are still here.
           </p>
           <Link
             to="/portfolio"
             className="inline-flex rounded-full bg-brand-ink px-6 py-4 text-sm font-semibold uppercase tracking-[0.3em] text-white transition-colors hover:bg-brand-accent"
           >
-            Back to portfolio
+            Back to highlights
           </Link>
         </div>
       </div>

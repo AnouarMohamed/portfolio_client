@@ -26,11 +26,11 @@ export function RelatedProjectsSection({ project }: RelatedProjectsSectionProps)
       <div className="mx-auto max-w-7xl">
         <div className="mb-10 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.35em] text-brand-accent">More work</p>
-            <h2 className="text-4xl font-serif md:text-5xl">Related case studies</h2>
+            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.35em] text-brand-accent">More to explore</p>
+            <h2 className="text-4xl font-serif md:text-5xl">Related highlights</h2>
           </div>
           <Link to="/portfolio" className="text-sm font-bold uppercase tracking-[0.3em] text-brand-ink transition-colors hover:text-brand-accent">
-            View full portfolio
+            View all highlights
           </Link>
         </div>
 

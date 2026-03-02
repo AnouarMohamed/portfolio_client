@@ -62,10 +62,10 @@ export function Navbar() {
             to="/contact"
             className="rounded-full bg-brand-ink px-5 py-3 text-xs font-bold uppercase tracking-[0.28em] text-white transition-colors hover:bg-brand-accent"
             data-analytics-event="cta_click"
-            data-analytics-label="Navbar start"
+            data-analytics-label="Navbar say hello"
             data-analytics-path="/contact"
           >
-            Start
+            Say hello
           </Link>
         </div>
 
@@ -115,10 +115,10 @@ export function Navbar() {
                   className="inline-flex rounded-full bg-brand-ink px-5 py-3 text-xs font-bold uppercase tracking-[0.28em] text-white transition-colors hover:bg-brand-accent"
                   onClick={closeMobileMenu}
                   data-analytics-event="cta_click"
-                  data-analytics-label="Mobile start a project"
+                  data-analytics-label="Mobile say hello"
                   data-analytics-path="/contact"
                 >
-                  Start a Project
+                  Say hello
                 </Link>
               </div>
             </div>

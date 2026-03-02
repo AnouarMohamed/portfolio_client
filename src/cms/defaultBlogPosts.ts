@@ -2,115 +2,87 @@ import type { BlogPost } from '../types';
 
 export const DEFAULT_BLOG_POSTS: BlogPost[] = [
   {
-    id: 'post-minimalist-living',
-    title: 'The Art of Minimalist Living',
+    id: 'post-pediatrics-listening',
+    title: 'What Pediatrics Is Teaching Me About Listening',
     excerpt:
-      'Exploring how simplicity can bring profound clarity to our daily routines and creative spaces.',
+      'Children rarely tell you the whole story in neat sentences, which means listening has to become wider and softer.',
     content:
-      'Minimalism is more than just an aesthetic; it is a philosophy of intentionality. By removing the excess, we make room for what truly matters.\n\nIn this post, we dive into the psychology of clutter, curating a workspace that inspires, and digital minimalism in an always-on world.\n\nSimplicity is the ultimate sophistication.',
-    date: '2024-03-15',
-    category: 'Lifestyle',
+      'The more time I spend in pediatrics, the more I realize that listening is not only about words. It is about tone, posture, the way a parent repeats one detail twice, and the moment a child finally relaxes enough to look at you directly.\n\nI used to think confidence in medicine would arrive through speaking clearly. It does matter, of course, but lately I have been learning that good care often begins with making the room feel safe enough for people to speak honestly.\n\nThat feels like a lesson I want to keep.',
+    date: '2026-02-18',
+    category: 'Medicine',
     image:
-      'https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?auto=format&fit=crop&q=80&w=800',
+      'https://images.unsplash.com/photo-1516574187841-cb9cc2ca948b?auto=format&fit=crop&q=80&w=800',
     sortOrder: 1,
     status: 'published',
   },
   {
-    id: 'post-beauty-mundane',
-    title: 'Finding Beauty in the Mundane',
+    id: 'post-anatomy-sketchbook',
+    title: 'Why I Still Keep an Anatomy Sketchbook',
     excerpt:
-      'A photographic journey through the quiet moments that often go unnoticed in the bustle of life.',
+      'Drawing slows revision down in the best way. It turns memorization into attention.',
     content:
-      'We often chase the grand milestones, forgetting that life happens in the quiet intervals. The steam rising from a morning coffee, the way light hits a dusty bookshelf, the sound of rain against the window.\n\nThese are the moments that ground us.',
-    date: '2024-03-10',
-    category: 'Photography',
+      'My anatomy sketchbook started as a study trick and quietly became one of the most important parts of my routine. When I draw, I remember better, but I also notice more. Shape, proportion, relationship, and rhythm all become clearer when I have to stay with them long enough to paint them.\n\nIt is also a small act of resistance against rushing. Medicine can move fast. Sketching reminds me that understanding is sometimes built by slowing down on purpose.',
+    date: '2026-02-02',
+    category: 'Painting',
     image:
-      'https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&q=80&w=800',
+      'https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&q=80&w=800',
     sortOrder: 2,
     status: 'published',
   },
   {
-    id: 'post-digital-design',
-    title: 'The Future of Digital Design',
+    id: 'post-grounding-habits',
+    title: 'Small Habits That Keep Me Grounded During Clerkships',
     excerpt:
-      'How organic shapes and soft aesthetics are redefining our relationship with technology.',
+      'Nothing dramatic. Just the handful of routines that make intense weeks feel more livable.',
     content:
-      'As we spend more time in digital environments, the need for human-centric design grows. We are seeing a shift away from cold, sharp edges towards soft shadows, organic curves, and tactile interfaces.',
-    date: '2024-03-05',
-    category: 'Design',
+      'A clean notebook. Morning coffee before messages. Ten quiet minutes after getting home. One song on repeat while washing brushes. Calling a friend instead of scrolling.\n\nNone of these habits are impressive, but together they do something important: they help me return to myself. I am learning that being a good student is not only about absorbing more information. It is also about building a life that can hold the information without collapsing under it.',
+    date: '2026-01-20',
+    category: 'Life',
     image:
-      'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&q=80&w=800',
+      'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&q=80&w=800',
     sortOrder: 3,
     status: 'published',
   },
   {
-    id: 'post-morning-rituals',
-    title: 'Morning Rituals for Creativity',
+    id: 'post-painting-after-shifts',
+    title: 'Painting After Long Hospital Days',
     excerpt:
-      'How the first hour of your day sets the tone for your creative output and mental clarity.',
+      'I never paint to be productive. I paint so the day can end in a more human way.',
     content:
-      'The morning is a sacred time. Before the noise of the world rushes in, we have a window of opportunity to set our intentions.',
-    date: '2024-02-28',
-    category: 'Lifestyle',
+      'After certain days, language feels too sharp. Painting gives me another register. I can work with color, mood, and gesture instead of trying to summarize everything neatly.\n\nSometimes the result is a good painting. Sometimes it is only a page that helped me breathe a little deeper. Both outcomes count.',
+    date: '2026-01-08',
+    category: 'Painting',
     image:
-      'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&q=80&w=800',
+      'https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?auto=format&fit=crop&q=80&w=800',
     sortOrder: 4,
     status: 'published',
   },
   {
-    id: 'post-color-design',
-    title: 'The Power of Color in Design',
+    id: 'post-books-this-semester',
+    title: 'Books Sitting Beside My Bed This Semester',
     excerpt:
-      'How different hues influence our emotions and the way we interact with digital products.',
+      'A mix of fiction, essays, and the kind of books that make you underline more than you expected.',
     content:
-      'Color is one of the most powerful tools in a designer\'s toolkit. It can evoke emotion, create hierarchy, and guide a user\'s attention.',
-    date: '2024-02-20',
-    category: 'Design',
+      'This semester I have been carrying a small stack between my desk and my bed: one novel for softness, one essay collection for perspective, one book I keep pretending I will read more slowly than I actually do.\n\nReading helps me stay porous. It gives me language for feelings medicine does not always name, and it reminds me that people are always larger than the version of them that arrives in a clinical summary.',
+    date: '2025-12-22',
+    category: 'Books',
     image:
-      'https://images.unsplash.com/photo-1500673922987-e212871fec22?auto=format&fit=crop&q=80&w=800',
+      'https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&q=80&w=800',
     sortOrder: 5,
     status: 'published',
   },
   {
-    id: 'post-golden-hour',
-    title: 'Capturing the Golden Hour',
+    id: 'post-speaking-up-rounds',
+    title: 'Learning to Speak Up on Ward Rounds',
     excerpt:
-      'Tips for photographers on how to make the most of that magical time just before sunset.',
+      'Confidence for me has looked less like volume and more like clarity.',
     content:
-      'The golden hour is a photographer\'s dream. The soft, warm light creates long shadows and a magical atmosphere that is hard to replicate.',
-    date: '2024-02-15',
-    category: 'Photography',
+      'Ward rounds used to make me rehearse every sentence in my head before saying anything aloud. I still prepare carefully, but I am starting to understand that speaking up is not about sounding flawless. It is about being useful, clear, and willing to contribute even before you feel perfectly ready.\n\nThat is a lesson I am trying to take beyond medicine too.',
+    date: '2025-12-10',
+    category: 'Medicine',
     image:
-      'https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&q=80&w=800',
+      'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&q=80&w=800',
     sortOrder: 6,
-    status: 'published',
-  },
-  {
-    id: 'post-sustainable-design',
-    title: 'Sustainable Design Practices',
-    excerpt:
-      'How designers can contribute to a more sustainable future through mindful material choices and processes.',
-    content:
-      'Sustainability is no longer an option; it is a necessity. As designers, we have a responsibility to consider the environmental impact of our work.',
-    date: '2024-02-10',
-    category: 'Design',
-    image:
-      'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&q=80&w=800',
-    sortOrder: 7,
-    status: 'published',
-  },
-  {
-    id: 'post-typography',
-    title: 'The Importance of Typography',
-    excerpt:
-      'Why choosing the right typeface is crucial for effective communication and brand identity.',
-    content:
-      'Typography is the voice of your design. It conveys tone, personality, and emotion before a single word is read.',
-    date: '2024-02-05',
-    category: 'Design',
-    image:
-      'https://images.unsplash.com/photo-1517210122415-b0c70b2a09bf?auto=format&fit=crop&q=80&w=800',
-    sortOrder: 8,
     status: 'published',
   },
 ];

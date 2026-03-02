@@ -10,9 +10,9 @@ export function ProjectResultsSection({ project }: ProjectResultsSectionProps) {
       <div className="mx-auto max-w-7xl">
         <div className="mb-10 max-w-2xl">
           <p className="mb-4 text-xs font-semibold uppercase tracking-[0.35em] text-brand-accent">
-            Impact
+            Details
           </p>
-          <h2 className="text-4xl font-serif md:text-5xl">The result was sharper narrative, cleaner systems, and a stronger commercial surface.</h2>
+          <h2 className="text-4xl font-serif md:text-5xl">A few numbers and notes that capture the shape of this chapter.</h2>
         </div>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
